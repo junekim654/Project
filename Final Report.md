@@ -1,4 +1,4 @@
-# Project Title: Prediction for 2018 NCAA Basketball Tournament
+# Prediction for 2018 NCAA Basketball Tournament
 
-# Introduction
+## Introduction
 
