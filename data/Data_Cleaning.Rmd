@@ -10,6 +10,18 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+# unzip necessary files
+unzip("./PlayByPlay_2010/Events_2010.csv.zip",exdir= "./PlayByPlay_2010") 
+unzip("./PlayByPlay_2011/Events_2011.csv.zip",exdir= "./PlayByPlay_2011") 
+unzip("./PlayByPlay_2012/Events_2012.csv.zip",exdir= "./PlayByPlay_2012") 
+unzip("./PlayByPlay_2013/Events_2013.csv.zip",exdir= "./PlayByPlay_2013") 
+unzip("./PlayByPlay_2014/Events_2014.csv.zip",exdir= "./PlayByPlay_2014") 
+unzip("./PlayByPlay_2015/Events_2015.csv.zip",exdir= "./PlayByPlay_2015") 
+unzip("./PlayByPlay_2016/Events_2016.csv.zip",exdir= "./PlayByPlay_2016") 
+unzip("./PlayByPlay_2017/Events_2017.csv.zip",exdir= "./PlayByPlay_2017") 
+```
+
+```{r}
 #FirstD1Season - the first season in our dataset that the school was a Division-I school
 #LastD1Season - the last season in our dataset that the school was a Division-I school
 teams=read.csv("DataFiles/Teams.csv")
