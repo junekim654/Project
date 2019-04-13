@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-# unzip necessary files
+# unzip necessary files (need to do it only once
 unzip("./PlayByPlay_2010/Events_2010.csv.zip",exdir= "./PlayByPlay_2010") 
 unzip("./PlayByPlay_2011/Events_2011.csv.zip",exdir= "./PlayByPlay_2011") 
 unzip("./PlayByPlay_2012/Events_2012.csv.zip",exdir= "./PlayByPlay_2012") 
