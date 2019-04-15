@@ -1,0 +1,139 @@
+---
+title: "Predecting_Model"
+author: "Taiga Hasegawa(taigah2)"
+date: "2019/4/12"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+train_X=read.csv("train_X.csv")[,-1]
+train_y=read.csv("train_y.csv")[,-1]
+test_X=read.csv("test_X.csv")[,-1]
+test_y=read.csv("test_y.csv")[,-1]
+train=cbind(train_X,train_y)
+train_final=drop_na(train)
+test=cbind(test_X,test_y)
+test_final=drop_na(test)
+```
+
+#PCA
+This data has too many numerical variables and they may cause colinearity. 
+```{r}
+#We must omit variables unnecessary for modeling
+#Pts variable should also be omitted because this is the same with match result (i.e. Point difference between two team =result ) 
+#We can use estimated Pts_diff only for test dataset but this time we also omitted this variable from testdata as conviniece
+train_final_for_pca=train_final[,c(-2,-3,-4,-7,-46)]
+
+test_final_for_pca=test_final[,c(-2,-3,-4,-7,-46)]
+
+pca=prcomp(train_final_for_pca,scale. = TRUE)
+plot(pca, type = "l", pch = 19)
+```
+```{r}
+#I got better result when using 9 components than 5 components
+train_pca=pca$x[,1:9]
+test_pca <- predict(pca, newdata =test_final_for_pca )
+test_pca=data.frame(test_pca[,1:9])
+```
+
+#Logistic Regression
+```{r}
+library(glmnet)
+```
+
+```{r}
+y=train_final[,46]
+train_pca=data.frame(cbind(train_pca,y))
+fit=glm(y~.,data = train_pca,family = binomial(link=logit))
+summary(fit)
+```
+```{r}
+predicted <- predict(fit, test_pca, type="response")
+
+result.pred = rep(0, length(predicted))
+result.pred[predicted > .5] = 1
+
+table(result.pred,test_final[,46])
+```
+The result is quite good but we will try to use other model and Pts_diff variable.
+
+#LDA
+```{r}
+library(MASS)
+dig.lda=lda(train_pca[,1:9],y)
+Ytest.pred.lda=predict(dig.lda, test_pca[,1:9])$class
+table(test_final[,46], Ytest.pred.lda)
+```
+
+#QDA
+```{r}
+dig.qda=qda(train_pca[,1:9],y)
+Ytest.pred.qda=predict(dig.qda, test_pca[,1:9])$class
+table(test_final[,46], Ytest.pred.qda)
+```
+
+#Random Forest
+```{r}
+library(randomForest)
+rf.fit = randomForest(train_pca[,1:9], as.factor(y), ntree = 1500, mtry = 7, nodesize = 10, sampsize = 500)
+pred = predict(rf.fit, test_pca[,1:9])
+table(test_final[,46], pred)
+```
+
+#Neural Network
+```{r}
+train_mean=apply(train_final_for_pca, 2, FUN=mean)
+train_for_neural=scale(train_final_for_pca,center = train_mean, scale = FALSE)
+test_for_neural=scale(test_final_for_pca,center = train_mean, scale = FALSE)
+
+library(keras)
+k_clear_session()
+model <- keras_model_sequential() %>% 
+    layer_dense(units = 64, activation = "relu", kernel_regularizer = regularizer_l2(0.001),
+                input_shape = dim(train_for_neural)[2]) %>% 
+    layer_dropout(rate = 0.5) %>%
+    layer_dense(units = 64, kernel_regularizer = regularizer_l2(0.001),activation = "relu") %>% 
+    layer_dropout(rate = 0.5) %>%
+    layer_dense(units = 1,kernel_regularizer = regularizer_l2(0.001), activation = "sigmoid") 
+model %>% compile(
+    optimizer = optimizer_rmsprop(lr=0.001), 
+    loss = "binary_crossentropy", 
+    metrics = c("accuracy")
+)
+```
+
+```{r}
+val_indices <- 1:10000
+
+set.seed(100)
+
+index <- sample(dim(train_for_neural)[1],10000,replace = FALSE)
+x_val=train_for_neural[index,]
+x_train=train_for_neural[-index,]
+
+y_val <- y[index]
+y_train <- y[-index]
+
+num_epochs <- 25
+model %>% fit(x_train, y_train,
+                epochs = num_epochs, batch_size = 128,validation_data = list(x_val, y_val))
+results <- model %>% evaluate(test_for_neural, test_final[,46])
+results
+table(predict_classes(model, test_for_neural),test_final[,46])
+```
+
+
+#Different criteria
+In this section, we're also using Pts_diff (point difference between Team1 and Team2 estimated from previous game).
+```{r}
+result_from_pts=ifelse(test_final$Pts_diff>0,1,0)
+table(result_from_pts,test_final[,46])
+```
+This is better than the result from logistic regression, LDA, Random Forest. It means it's deffinitely worth using "Pts_diff" variable.
+
+
+
