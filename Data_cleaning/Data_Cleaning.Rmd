@@ -1,0 +1,416 @@
+---
+title: "STAT432_Datacleaning"
+author: "Taiga Hasegawa(taigah2)"
+date: "2019/4/13"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Read the csv file
+Read the csv file necessary for making train and test dataset
+```{r}
+RegularSeasonCompactResults=read.csv("DataFiles/RegularSeasonCompactResults.csv")
+
+NCAATourneyCompactResults=read.csv("DataFiles/NCAATourneyCompactResults.csv")
+
+RegularSeasonDetailedResults=read.csv("DataFiles/RegularSeasonDetailedResults.csv")
+
+NCAATourneyDetailedResults=read.csv("DataFiles/NCAATourneyDetailedResults.csv")
+
+MasseyOrdinals=read.csv("MasseyOrdinals.csv")
+
+Events_2010=read.csv("PlayByPlay_2010/Events_2010.csv")
+Events_2011=read.csv("PlayByPlay_2011/Events_2011.csv")
+Events_2012=read.csv("PlayByPlay_2012/Events_2012.csv")
+Events_2013=read.csv("PlayByPlay_2013/Events_2013.csv")
+Events_2014=read.csv("PlayByPlay_2014/Events_2014.csv")
+Events_2015=read.csv("PlayByPlay_2015/Events_2015.csv")
+Events_2016=read.csv("PlayByPlay_2016/Events_2016.csv")
+Events_2017=read.csv("PlayByPlay_2017/Events_2017.csv")
+
+Players_2010=read.csv("PlayByPlay_2010/Players_2010.csv")
+Players_2011=read.csv("PlayByPlay_2011/Players_2011.csv")
+Players_2012=read.csv("PlayByPlay_2012/Players_2012.csv")
+Players_2013=read.csv("PlayByPlay_2013/Players_2013.csv")
+Players_2014=read.csv("PlayByPlay_2014/Players_2014.csv")
+Players_2015=read.csv("PlayByPlay_2015/Players_2015.csv")
+Players_2016=read.csv("PlayByPlay_2016/Players_2016.csv")
+Players_2017=read.csv("PlayByPlay_2017/Players_2017.csv")
+
+#Delete the "TEAM" from playername column
+Players_2010=Players_2010[Players_2010$PlayerName!="TEAM",]
+Players_2011=Players_2011[Players_2011$PlayerName!="TEAM",]
+Players_2012=Players_2012[Players_2012$PlayerName!="TEAM",]
+Players_2013=Players_2013[Players_2013$PlayerName!="TEAM",]
+Players_2014=Players_2014[Players_2014$PlayerName!="TEAM",]
+Players_2015=Players_2015[Players_2015$PlayerName!="TEAM",]
+Players_2016=Players_2016[Players_2016$PlayerName!="TEAM",]
+Players_2017=Players_2017[Players_2017$PlayerName!="TEAM",]
+```
+
+
+```{r}
+library(dplyr)
+library(tidyr)
+```
+
+#Pre-process the players data
+
+```{r}
+####get the score of each player every year#### 
+
+##give the score to the player in the following way##
+#assist=1
+#block=1
+#steal=1
+#turnover=-1
+#timeout, timeout_tv =0
+#foul_pers=-1
+#foul_tech=-1
+#reb_off, reb_def, reb_dead=1
+#sub_in, sub_ou=0
+#made1_free=1,miss1_free=-1
+#made2_dunk=1,miss2_dunk=0
+#made2_tip=1,miss2_tip=0
+#made2_lay=1,miss2_lay=0
+#made2_jump=1,miss2_jump=0
+#made3_jump=1,miss3_jump=0
+
+events2010=dplyr::full_join(Events_2010,Players_2010,by=c("Season","EventPlayerID"="PlayerID","EventTeamID"="TeamID"))
+events2010$events_score=ifelse(events2010$EventType%in%c("assist","block","steal","reb_off","reb_def","reb_dead","made1_free","made2_dunk","made2_tip","made2_lay","made2_jump","made3_jump"),1,ifelse(events2010$EventType%in%c("turnover","foul_pers","foul_tech","miss1_free"),-1,0))
+events2010=group_by(events2010,PlayerName)%>%summarise(TotalScore=sum(events_score))
+events2011=dplyr::full_join(Events_2011,Players_2011,by=c("Season","EventPlayerID"="PlayerID","EventTeamID"="TeamID"))
+events2011$events_score=ifelse(events2011$EventType%in%c("assist","block","steal","reb_off","reb_def","reb_dead","made1_free","made2_dunk","made2_tip","made2_lay","made2_jump","made3_jump"),1,ifelse(events2011$EventType%in%c("turnover","foul_pers","foul_tech","miss1_free"),-1,0))
+events2011=group_by(events2011,PlayerName)%>%summarise(TotalScore=sum(events_score))
+events2012=dplyr::full_join(Events_2012,Players_2012,by=c("Season","EventPlayerID"="PlayerID","EventTeamID"="TeamID"))
+events2012$events_score=ifelse(events2012$EventType%in%c("assist","block","steal","reb_off","reb_def","reb_dead","made1_free","made2_dunk","made2_tip","made2_lay","made2_jump","made3_jump"),1,ifelse(events2012$EventType%in%c("turnover","foul_pers","foul_tech","miss1_free"),-1,0))
+events2012=group_by(events2012,PlayerName)%>%summarise(TotalScore=sum(events_score))
+events2013=dplyr::full_join(Events_2013,Players_2013,by=c("Season","EventPlayerID"="PlayerID","EventTeamID"="TeamID"))
+events2013$events_score=ifelse(events2013$EventType%in%c("assist","block","steal","reb_off","reb_def","reb_dead","made1_free","made2_dunk","made2_tip","made2_lay","made2_jump","made3_jump"),1,ifelse(events2013$EventType%in%c("turnover","foul_pers","foul_tech","miss1_free"),-1,0))
+events2013=group_by(events2013,PlayerName)%>%summarise(TotalScore=sum(events_score))
+events2014=dplyr::full_join(Events_2014,Players_2014,by=c("Season","EventPlayerID"="PlayerID","EventTeamID"="TeamID"))
+events2014$events_score=ifelse(events2014$EventType%in%c("assist","block","steal","reb_off","reb_def","reb_dead","made1_free","made2_dunk","made2_tip","made2_lay","made2_jump","made3_jump"),1,ifelse(events2014$EventType%in%c("turnover","foul_pers","foul_tech","miss1_free"),-1,0))
+events2014=group_by(events2014,PlayerName)%>%summarise(TotalScore=sum(events_score))
+events2015=dplyr::full_join(Events_2015,Players_2015,by=c("Season","EventPlayerID"="PlayerID","EventTeamID"="TeamID"))
+events2015$events_score=ifelse(events2015$EventType%in%c("assist","block","steal","reb_off","reb_def","reb_dead","made1_free","made2_dunk","made2_tip","made2_lay","made2_jump","made3_jump"),1,ifelse(events2015$EventType%in%c("turnover","foul_pers","foul_tech","miss1_free"),-1,0))
+events2015=group_by(events2015,PlayerName)%>%summarise(TotalScore=sum(events_score))
+events2016=dplyr::full_join(Events_2016,Players_2016,by=c("Season","EventPlayerID"="PlayerID","EventTeamID"="TeamID"))
+events2016$events_score=ifelse(events2016$EventType%in%c("assist","block","steal","reb_off","reb_def","reb_dead","made1_free","made2_dunk","made2_tip","made2_lay","made2_jump","made3_jump"),1,ifelse(events2016$EventType%in%c("turnover","foul_pers","foul_tech","miss1_free"),-1,0))
+events2016=group_by(events2016,PlayerName)%>%summarise(TotalScore=sum(events_score))
+events2017=dplyr::full_join(Events_2017,Players_2017,by=c("Season","EventPlayerID"="PlayerID","EventTeamID"="TeamID"))
+events2017$events_score=ifelse(events2017$EventType%in%c("assist","block","steal","reb_off","reb_def","reb_dead","made1_free","made2_dunk","made2_tip","made2_lay","made2_jump","made3_jump"),1,ifelse(events2017$EventType%in%c("turnover","foul_pers","foul_tech","miss1_free"),-1,0))
+events2017=group_by(events2017,PlayerName)%>%summarise(TotalScore=sum(events_score))
+```
+
+```{r}
+#merge Players file and events 
+player_score_2010=dplyr::full_join(Players_2010,events2010,by="PlayerName")
+player_score_2011=dplyr::full_join(Players_2011,events2011,by="PlayerName")
+player_score_2012=dplyr::full_join(Players_2012,events2012,by="PlayerName")
+player_score_2013=dplyr::full_join(Players_2013,events2013,by="PlayerName")
+player_score_2014=dplyr::full_join(Players_2014,events2014,by="PlayerName")
+player_score_2015=dplyr::full_join(Players_2015,events2015,by="PlayerName")
+player_score_2016=dplyr::full_join(Players_2016,events2016,by="PlayerName")
+player_score_2017=dplyr::full_join(Players_2017,events2017,by="PlayerName")
+```
+
+```{r}
+#get the average player score of each team for every year 
+team_score_2010=group_by(player_score_2010,TeamID)%>%summarise(Teamscore=mean(TotalScore))
+team_score_2010$Season=2010
+team_score_2010=team_score_2010[-dim(team_score_2010)[1],]
+team_score_2011=group_by(player_score_2011,TeamID)%>%summarise(Teamscore=mean(TotalScore))
+team_score_2011$Season=2011
+team_score_2011=team_score_2011[-dim(team_score_2011)[1],]
+team_score_2012=group_by(player_score_2012,TeamID)%>%summarise(Teamscore=mean(TotalScore))
+team_score_2012$Season=2012
+team_score_2012=team_score_2012[-dim(team_score_2012)[1],]
+team_score_2013=group_by(player_score_2013,TeamID)%>%summarise(Teamscore=mean(TotalScore))
+team_score_2013$Season=2013
+team_score_2013=team_score_2013[-dim(team_score_2013)[1],]
+team_score_2014=group_by(player_score_2014,TeamID)%>%summarise(Teamscore=mean(TotalScore))
+team_score_2014$Season=2014
+team_score_2014=team_score_2014[-dim(team_score_2014)[1],]
+team_score_2015=group_by(player_score_2015,TeamID)%>%summarise(Teamscore=mean(TotalScore))
+team_score_2015$Season=2015
+team_score_2015=team_score_2015[-dim(team_score_2015)[1],]
+team_score_2016=group_by(player_score_2016,TeamID)%>%summarise(Teamscore=mean(TotalScore))
+team_score_2016$Season=2016
+team_score_2016=team_score_2016[-dim(team_score_2016)[1],]
+team_score_2017=group_by(player_score_2017,TeamID)%>%summarise(Teamscore=mean(TotalScore))
+team_score_2017$Season=2017
+team_score_2017=team_score_2017[-dim(team_score_2017)[1],]
+
+team_score=rbind(team_score_2010,team_score_2011)
+team_score=rbind(team_score,team_score_2012)
+team_score=rbind(team_score,team_score_2013)
+team_score=rbind(team_score,team_score_2014)
+team_score=rbind(team_score,team_score_2015)
+team_score=rbind(team_score,team_score_2016)
+team_score=rbind(team_score,team_score_2017)
+```
+
+
+#Start making the train dataset
+
+```{r}
+#use the NCAATourneyCompactResults after 2014 as test data and use the other as training data
+NCAATourneyCompactResults_train=NCAATourneyCompactResults[NCAATourneyCompactResults$Season<2014,]
+NCAATourneyCompactResults_test=NCAATourneyCompactResults[NCAATourneyCompactResults$Season>=2014,]
+NCAATourneyDetailedResults_train=NCAATourneyDetailedResults[NCAATourneyDetailedResults$Season<2014,]
+NCAATourneyDetailedResults_test=NCAATourneyDetailedResults[NCAATourneyDetailedResults$Season>=2014,]
+
+Compact_train=rbind(RegularSeasonCompactResults,NCAATourneyCompactResults_train)
+Compact_test=NCAATourneyCompactResults_test
+Details_train=rbind(RegularSeasonDetailedResults,NCAATourneyDetailedResults_train)
+Details_test=NCAATourneyDetailedResults_test
+
+#I uesd left full because I want to keep the all row in both dataset
+Results_train=dplyr::full_join(Compact_train,Details_train,by=c("Season","DayNum","WTeamID","LTeamID","WScore","LScore","WLoc","NumOT"))
+
+Results_test=dplyr::full_join(Compact_test,Details_test,by=c("Season","DayNum","WTeamID","LTeamID","WScore","LScore","WLoc","NumOT"))
+
+#spread the systemnae 
+spread_rank=spread(MasseyOrdinals,key="SystemName",value="OrdinalRank")
+
+dat_day_train=left_join(Results_train,spread_rank,by=c("Season","DayNum"="RankingDayNum","WTeamID"="TeamID"))
+dat_day_train=left_join(dat_day_train,spread_rank,by=c("Season","DayNum"="RankingDayNum","LTeamID"="TeamID"))
+#Column 70T.x~ZAM.x is the ranking for WTeam
+#Column 70T.y~ZAM.y is the ranking for LTeam
+train=dat_day_train
+#Rankingdata only has the date before DayNum=134. This is why, I want to regard the rating of the DayNum=133 as the rate for the NCAATourney (DauNum>133)
+spread_rank_for_test=spread_rank[spread_rank$RankingDayNum==133,]
+
+dat_day_test=left_join(Results_test,spread_rank_for_test,by=c("Season","WTeamID"="TeamID"))
+dat_day_test=left_join(dat_day_test,spread_rank_for_test,by=c("Season","LTeamID"="TeamID"))
+
+
+dat_day_test=dat_day_test[,c(-35,-202)]
+test=dat_day_test
+```
+
+
+
+#Enrich the dataset 
+
+#Feature Engineering
+```{r}
+
+#Points Winning/Losing Team
+train$WPts=2*train$WFGM+train$WFGM3+train$WFTM
+train$LPts=2*train$LFGM+train$LFGM3+train$LFTM
+#Calculate Winning/losing Team Possesion Feature
+wPos=train$WFGA+train$WTO+0.44*train$WFTA-train$WOR
+lPos=train$LFGA+train$LTO+0.44*train$LFTA-train$LOR
+#two teams use almost the same number of possessions in a game
+#(plus/minus one or two - depending on how quarters end)
+#so let's just take the average
+train$Pos=(wPos+lPos)/2
+#Offensive efficiency (OffRtg) = 100 x (Points / Possessions)
+train$WOffRtg=100*(train$WPts/train$Pos)
+train$LOffRtg=100*(train$LPts/train$Pos)
+#Defensive efficiency (DefRtg) = 100 x (Opponent points / Opponent possessions)
+train$WDefRtg=train$LOffRtg
+train$LDefRtg=train$WOffRtg
+#Net Rating = Off.Rtg - Def.Rtg
+train$WNetRtg=train$WOffRtg-train$WDefRtg
+train$LNetRtg=train$LOffRtg-train$LDefRtg
+#Assist Ratio : Percentage of team possessions that end in assists
+train$WAstR=100*train$WAst/(train$WFGA + 0.44*train$WFTA+ train$WAst + train$WTO)
+train$LAstR=100*train$LAst/(train$LFGA + 0.44*train$LFTA+ train$LAst + train$LTO)
+#Turnover Ratio: Number of turnovers of a team per 100 possessions used.
+#(TO * 100) / (FGA + (FTA * 0.44) + AST + TO)
+train$WTOR=100 * train$WTO / (train$WFGA + 0.44*train$WFTA + train$WAst + train$WTO)
+train$LTOR=100 * train$LTO / (train$LFGA + 0.44*train$LFTA + train$LAst + train$LTO)
+#The Shooting Percentage : Measure of Shooting Efficiency (FGA/FGA3, FTA)
+train$WTSP=100 * train$WPts / (2 * (train$WFGA + 0.44*train$WFTA))
+train$LTSP=100 * train$LPts / (2 * (train$LFGA + 0.44*train$LFTA))
+#eFG% : Effective Field Goal Percentage adjusting for the fact that 3pt shots are more valuable 
+train$WeFGP=(train$WFGM + 0.5 *train$WFGM3) / train$WFGA
+train$LeFGP=(train$LFGM + 0.5 *train$LFGM3) / train$LFGA
+#FTA Rate : How good a team is at drawing fouls.
+train$WFTAR = train$WFTA / train$WFGA
+train$LFTAR = train$LFTA / train$LFGA
+#OREB% : Percentage of team offensive rebounds
+train$WORP = train$WOR / (train$WOR + train$LDR)
+train$LORP = train$LOR / (train$WOR + train$LDR)
+#DREB% : Percentage of team defensive rebounds
+train$WDRP = train$WDR / (train$WDR + train$LOR )
+train$LDRP=train$LDR / (train$LDR + train$WOR )
+#REB% : Percentage of team total rebounds
+train$WRP=(train$WDR + train$WOR) / (train$WDR + train$WOR + train$LDR + train$LOR)
+train$LRP=(train$LDR + train$LOR) / (train$WDR + train$WOR + train$LDR + train$LOR)
+#use the average ranking 
+train$Wranking=apply(train[,35:200],1,function(x) mean(x,na.rm=TRUE))
+train$Lranking=apply(train[,201:366],1,function(x) mean(x,na.rm=TRUE))
+train=train[,c(-9:-366)]
+colnames(train)[7]="Loc"
+sub_train=train
+```
+
+```{r}
+#In this case, winner team is named as TeamID1 and the result is 1
+train_1=train
+colnames(train_1)[3]="TeamID1"
+colnames(train_1)[5]="TeamID2"
+colnames(train_1)[4]="Team1_score"
+colnames(train_1)[6]="Team2_score"
+
+for(i in c(9,12,14,16,18,20,22,24,26,28,30,32,34)){
+  colnames(train_1)[i]=paste0("Team1_",substr(colnames(train_1)[i],2,nchar(colnames(train_1)[i])))
+}
+for(i in c(10,13,15,17,19,21,23,25,27,29,31,33,35)){
+  colnames(train_1)[i]=paste0("Team2_",substr(colnames(train_1)[i],2,nchar(colnames(train_1)[i])))
+}
+
+winners=train_1
+winners$Result=1.0
+```
+
+```{r}
+#In this case, winner team is named as TeamID1 and the result is 1
+train_2=train
+colnames(train_2)[3]="TeamID2"
+colnames(train_2)[5]="TeamID1"
+colnames(train_2)[4]="Team2_score"
+colnames(train_2)[6]="Team1_score"
+
+for(i in c(9,12,14,16,18,20,22,24,26,28,30,32,34)){
+  colnames(train_2)[i]=paste0("Team2_",substr(colnames(train_2)[i],2,nchar(colnames(train_2)[i])))
+}
+for(i in c(10,13,15,17,19,21,23,25,27,29,31,33,35)){
+  colnames(train_2)[i]=paste0("Team1_",substr(colnames(train_2)[i],2,nchar(colnames(train_2)[i])))
+}
+
+losers=train_2
+losers$Result=0.0
+```
+
+```{r}
+#Combine them
+train=rbind(winners,losers)
+```
+
+```{r}
+#Combine with team score
+train=dplyr::left_join(train,team_score,by=c("Season","TeamID1"="TeamID"))
+train=dplyr::left_join(train,team_score,by=c("Season","TeamID2"="TeamID"))
+train_X=train[,c(-2,-4,-6,-8,-36)]
+train_y=train[,36]
+colnames(train_X)[32]="player_score_1"
+colnames(train_X)[33]="player_score_2"
+```
+
+
+```{r}
+#use the average ranking 
+test$Wranking=apply(test[,35:200],1,function(x) mean(x,na.rm=TRUE))
+test$Lranking=apply(test[,201:366],1,function(x) mean(x,na.rm=TRUE))
+
+#We have to remove the value from WFGM~LPF because otherwise it will cause data leakage
+test=test[,c(-8:-366)]
+```
+
+
+```{r}
+
+#Instead substitute the previous average for the feature for winners
+weighted_mean=function(dat,colnum){
+  a=dat%>%group_by(TeamID1)%>%summarise(mean(.data[[colnames(dat)[colnum]]],na.rm=TRUE))
+  b=dat%>%group_by(TeamID1,TeamID2)%>%summarise(mean(.data[[colnames(dat)[colnum]]],na.rm=TRUE))
+  c=dplyr::left_join(b,a,by="TeamID1")
+  d=c[,c(3,4)]
+  c[colnames(sub_train)[colnum+4]]=apply(d,1,,FUN=weighted.mean,w=c(0.75,0.25),na.rm=TRUE)
+  c=c[,c(-3,-4)]
+  test=dplyr::left_join(test,c,by=c("WTeamID"="TeamID1","LTeamID"="TeamID2"))
+  return(test)
+}
+
+test=weighted_mean(dat=train_X,colnum=5)
+test=weighted_mean(dat=train_X,colnum=6)
+test=weighted_mean(dat=train_X,colnum=7)
+test=weighted_mean(dat=train_X,colnum=8)
+test=weighted_mean(dat=train_X,colnum=9)
+test=weighted_mean(dat=train_X,colnum=10)
+test=weighted_mean(dat=train_X,colnum=11)
+test=weighted_mean(dat=train_X,colnum=12)
+test=weighted_mean(dat=train_X,colnum=13)
+test=weighted_mean(dat=train_X,colnum=14)
+test=weighted_mean(dat=train_X,colnum=15)
+test=weighted_mean(dat=train_X,colnum=16)
+test=weighted_mean(dat=train_X,colnum=17)
+test=weighted_mean(dat=train_X,colnum=18)
+test=weighted_mean(dat=train_X,colnum=19)
+test=weighted_mean(dat=train_X,colnum=20)
+test=weighted_mean(dat=train_X,colnum=21)
+test=weighted_mean(dat=train_X,colnum=22)
+test=weighted_mean(dat=train_X,colnum=23)
+test=weighted_mean(dat=train_X,colnum=24)
+test=weighted_mean(dat=train_X,colnum=25)
+test=weighted_mean(dat=train_X,colnum=26)
+test=weighted_mean(dat=train_X,colnum=27)
+test=weighted_mean(dat=train_X,colnum=28)
+test=weighted_mean(dat=train_X,colnum=29)
+
+test=dplyr::left_join(test,team_score,by=c("Season","WTeamID"="TeamID"))
+test=dplyr::left_join(test,team_score,by=c("Season","LTeamID"="TeamID"))
+test=test[,c(-2,-4,-6)]
+```
+
+```{r}
+#In this case, winner team is named as TeamID1 and the result is 1
+winner=test
+colnames(winner)[2]="TeamID1"
+colnames(winner)[3]="TeamID2"
+
+for(i in c(5,7,10,12,14,16,18,20,22,24,26,28,30)){
+  colnames(winner)[i]=paste0("Team1_",substr(colnames(winner)[i],2,nchar(colnames(winner)[i])))
+}
+for(i in c(6,8,11,13,15,17,19,21,23,25,27,29,31)){
+  colnames(winner)[i]=paste0("Team2_",substr(colnames(winner)[i],2,nchar(colnames(winner)[i])))
+}
+
+winner$Result=1.0
+
+loser=test
+colnames(loser)[2]="TeamID2"
+colnames(loser)[3]="TeamID1"
+
+for(i in c(5,7,10,12,14,16,18,20,22,24,26,28,30)){
+  colnames(loser)[i]=paste0("Team2_",substr(colnames(loser)[i],2,nchar(colnames(loser)[i])))
+}
+for(i in c(6,8,11,13,15,17,19,21,23,25,27,29,31)){
+  colnames(loser)[i]=paste0("Team1_",substr(colnames(loser)[i],2,nchar(colnames(loser)[i])))
+}
+
+loser$Result=0.0
+test=rbind(winner,loser)
+
+colnames(test)[4]="Loc"
+colnames(test)[32]="player_score_1"
+colnames(test)[33]="player_score_2"
+test_X=test[,-34]
+test_y=test[,34]
+```
+
+```{r}
+test_X
+test_y
+```
+```{r}
+train_X
+train_y
+```
+
+```{r}
+write.csv(train_X,"train_X.csv")
+write.csv(train_y,"train_y.csv")
+write.csv(test_X,"test_X.csv")
+write.csv(test_y,"test_y.csv")
+```
+
+
+
