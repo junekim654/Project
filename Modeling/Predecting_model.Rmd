@@ -1,0 +1,285 @@
+---
+title: "Predecting_Model"
+author: "Taiga Hasegawa(taigah2)"
+date: "2019/4/12"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+train_X=read.csv("train_X.csv")[,-1]
+train_y=read.csv("train_y.csv")[,-1]
+train=cbind(train_X,train_y)
+train_final=drop_na(train)
+```
+
+
+
+#tuning hyper parameters
+There's the hyper parameters when making testdata. "weighted mean" function produces weighted mean between the features of each team and features of the particular match. We use grid search to tune these hyper parameters.
+```{r}
+sub_train=read.csv("subtrain.csv")[-1]
+
+hyper_parameter=c(0,0.05,0.1,0.2,0.3)
+
+acc=matrix(rep(NA,20),4,5)
+
+count=1
+
+for(hyper in hyper_parameter){
+  test=read.csv("sub_test.csv")[-1]
+  weighted_mean=function(dat,colnum){
+    a=dat%>%group_by(TeamID1)%>%summarise(mean(.data[[colnames(dat)[colnum]]],na.rm=TRUE))
+    b=dat%>%group_by(TeamID1,TeamID2)%>%summarise(mean(.data[[colnames(dat)[colnum]]],na.rm=TRUE))
+    c=dplyr::left_join(b,a,by="TeamID1")
+    d=c[,c(3,4)]
+    #The weights are highper  parameter
+    #When modeling we tried to adjust this value 
+    c[colnames(sub_train)[colnum+4]]=apply(d,1,,FUN=weighted.mean,w=c(hyper,1-hyper),na.rm=TRUE)
+    c=c[,c(-3,-4)]
+    test=dplyr::left_join(test,c,by=c("WTeamID"="TeamID1","LTeamID"="TeamID2"))
+    return(test)
+  }
+  for(i in 5:41){
+    test=weighted_mean(dat=train_X,colnum =i)
+  }
+  test=dplyr::left_join(test,team_score,by=c("Season","WTeamID"="TeamID"))
+  test=dplyr::left_join(test,team_score,by=c("Season","LTeamID"="TeamID"))
+  test=test[,c(-2,-4,-6)]
+  colnames(test)[4]="Loc"
+  
+  winner=test
+  colnames(winner)[2]="TeamID1"
+  colnames(winner)[3]="TeamID2"
+
+  for(i in c(5,7,12,15,17,20,23,26,29,32,35,38,41)){
+    colnames(winner)[i]=paste0("Team1_",substr(colnames(winner)[i],2,nchar(colnames(winner)[i])))
+  }
+  for(i in c(6,8,13,16,18,21,24,27,30,33,36,39,42)){
+    colnames(winner)[i]=paste0("Team2_",substr(colnames(winner)[i],2,nchar(colnames(winner)[i])))
+  }
+
+  winner$Result=1.0
+
+  loser=test
+  colnames(loser)[2]="TeamID2"
+  colnames(loser)[3]="TeamID1"
+
+  for(i in c(5,7,12,15,17,20,23,26,29,32,35,38,41)){
+    colnames(loser)[i]=paste0("Team2_",substr(colnames(loser)[i],2,nchar(colnames(loser)[i])))
+  }
+  for(i in c(6,8,13,16,18,21,24,27,30,33,36,39,42)){
+    colnames(loser)[i]=paste0("Team1_",substr(colnames(loser)[i],2,nchar(colnames(loser)[i])))
+  }
+
+  loser[,c(9,10,14,19,22,25,28,31,34,37,40,43)]=-winner[,c(9,10,14,19,22,25,28,31,34,37,40,43)]
+  loser$Loc=ifelse(loser$Loc=="A","H","A")
+  loser$Result=0.0
+
+
+  test=rbind(winner,loser)
+
+  colnames(test)[44]="player_score_1"
+  colnames(test)[45]="player_score_2"
+  test_X=test[,-46]
+  test_y=test[,46]
+  test_X=test_X[,c(1:4,7:43,5,6,44,45)]
+  
+  test=cbind(test_X,test_y)
+  
+  train_final_for_pca=train_final[,c(-2,-3,-4,-7,-46)]
+
+  test_final_for_pca=test_final[,c(-2,-3,-4,-7,-46)]
+
+  pca=prcomp(train_final_for_pca,scale. = TRUE)
+  
+  train_pca=pca$x[,1:9]
+  test_pca <- predict(pca, newdata =test_final_for_pca )
+  test_pca=data.frame(test_pca[,1:9])
+  
+  #logistic regression
+  y=train_final[,46]
+  train_pca=data.frame(cbind(train_pca,y))
+  fit=glm(y~.,data = train_pca,family = binomial(link=logit))
+  
+  predicted <- predict(fit, test_pca, type="response")
+
+  result.pred = rep(0, length(predicted))
+  result.pred[predicted > .5] = 1
+
+  acc[count,1]=mean(result.pred==test_final[,46])
+  
+  #LDA
+  dig.lda=lda(train_pca[,1:9],y)
+  Ytest.pred.lda=predict(dig.lda, test_pca[,1:9])$class
+  acc[count,2]=mean(test_final[,46]==Ytest.pred.lda)
+  
+  #QDA
+  dig.qda=qda(train_pca[,1:9],y)
+  Ytest.pred.qda=predict(dig.qda, test_pca[,1:9])$class
+  acc[count,3]=mean(test_final[,46]==Ytest.pred.qda)
+  
+  #Random Forest
+  rf.fit = randomForest(train_pca[,1:9], as.factor(y), ntree = 1500, mtry = 7, nodesize = 10, sampsize = 500)
+  pred = predict(rf.fit, test_pca[,1:9])
+  acc[count,4]=mean(test_final[,46]==pred)
+  
+  #Pts
+  #In this section, we're also using Pts_diff (point difference between Team1 and Team2 estimated from previous game).
+  result_from_pts=ifelse(test_final$Pts_diff>0,1,0)
+  acc[count,5]=mean(result_from_pts==test_final[,46])
+  
+  count=count+1
+}
+
+acc
+```
+
+
+It turned out that weight (0.05,0.95) gives the best result but in case that there was no same match before, I used (0.01,0.09).  
+```{r}
+  test=read.csv("sub_test.csv")[-1]
+  weighted_mean=function(dat,colnum){
+    a=dat%>%group_by(TeamID1)%>%summarise(mean(.data[[colnames(dat)[colnum]]],na.rm=TRUE))
+    b=dat%>%group_by(TeamID1,TeamID2)%>%summarise(mean(.data[[colnames(dat)[colnum]]],na.rm=TRUE))
+    c=dplyr::left_join(b,a,by="TeamID1")
+    d=c[,c(3,4)]
+    #The weights are highper  parameter
+    #When modeling we tried to adjust this value 
+    c[colnames(sub_train)[colnum+4]]=apply(d,1,,FUN=weighted.mean,w=c(0.05,0.95),na.rm=TRUE)
+    c=c[,c(-3,-4)]
+    test=dplyr::left_join(test,c,by=c("WTeamID"="TeamID1","LTeamID"="TeamID2"))
+    return(test)
+  }
+  for(i in 5:41){
+    test=weighted_mean(dat=train_X,colnum =i)
+  }
+  test=dplyr::left_join(test,team_score,by=c("Season","WTeamID"="TeamID"))
+  test=dplyr::left_join(test,team_score,by=c("Season","LTeamID"="TeamID"))
+  test=test[,c(-2,-4,-6)]
+  colnames(test)[4]="Loc"
+  
+  winner=test
+  colnames(winner)[2]="TeamID1"
+  colnames(winner)[3]="TeamID2"
+
+  for(i in c(5,7,12,15,17,20,23,26,29,32,35,38,41)){
+    colnames(winner)[i]=paste0("Team1_",substr(colnames(winner)[i],2,nchar(colnames(winner)[i])))
+  }
+  for(i in c(6,8,13,16,18,21,24,27,30,33,36,39,42)){
+    colnames(winner)[i]=paste0("Team2_",substr(colnames(winner)[i],2,nchar(colnames(winner)[i])))
+  }
+
+  winner$Result=1.0
+
+  loser=test
+  colnames(loser)[2]="TeamID2"
+  colnames(loser)[3]="TeamID1"
+
+  for(i in c(5,7,12,15,17,20,23,26,29,32,35,38,41)){
+    colnames(loser)[i]=paste0("Team2_",substr(colnames(loser)[i],2,nchar(colnames(loser)[i])))
+  }
+  for(i in c(6,8,13,16,18,21,24,27,30,33,36,39,42)){
+    colnames(loser)[i]=paste0("Team1_",substr(colnames(loser)[i],2,nchar(colnames(loser)[i])))
+  }
+
+  loser[,c(9,10,14,19,22,25,28,31,34,37,40,43)]=-winner[,c(9,10,14,19,22,25,28,31,34,37,40,43)]
+  loser$Loc=ifelse(loser$Loc=="A","H","A")
+  loser$Result=0.0
+
+  test=rbind(winner,loser)
+
+  colnames(test)[44]="player_score_1"
+  colnames(test)[45]="player_score_2"
+  test_X=test[,-46]
+  test_y=test[,46]
+  test_X=test_X[,c(1:4,7:43,5,6,44,45)]
+  
+  test=cbind(test_X,test_y)
+  
+  train_final_for_pca=train_final[,c(-2,-3,-4,-7,-46)]
+
+  test_final_for_pca=test_final[,c(-2,-3,-4,-7,-46)]
+
+  pca=prcomp(train_final_for_pca,scale. = TRUE)
+  
+  train_pca=pca$x[,1:9]
+  test_pca <- predict(pca, newdata =test_final_for_pca )
+  test_pca=data.frame(test_pca[,1:9])
+  
+  #logistic regression
+  y=train_final[,46]
+  train_pca=data.frame(cbind(train_pca,y))
+  fit=glm(y~.,data = train_pca,family = binomial(link=logit))
+  
+  predicted <- predict(fit, test_pca, type="response")
+
+  result.pred = rep(0, length(predicted))
+  result.pred[predicted > .5] = 1
+
+  table(result.pred,test_final[,46])
+  
+  #LDA
+  dig.lda=lda(train_pca[,1:9],y)
+  Ytest.pred.lda=predict(dig.lda, test_pca[,1:9])$class
+  table(test_final[,46],Ytest.pred.lda)
+  
+  #QDA
+  dig.qda=qda(train_pca[,1:9],y)
+  Ytest.pred.qda=predict(dig.qda, test_pca[,1:9])$class
+  table(test_final[,46],Ytest.pred.qda)
+  
+  #Random Forest
+  rf.fit = randomForest(train_pca[,1:9], as.factor(y), ntree = 1500, mtry = 7, nodesize = 10, sampsize = 500)
+  pred = predict(rf.fit, test_pca[,1:9])
+  table(test_final[,46],pred)
+  
+  #Pts
+  result_from_pts=ifelse(test_final$Pts_diff>0,1,0)
+  table(result_from_pts,test_final[,46])
+```
+#Neural Network
+```{r}
+train_mean=apply(train_final_for_pca, 2, FUN=mean)
+train_for_neural=scale(train_final_for_pca,center = train_mean, scale = FALSE)
+test_for_neural=scale(test_final_for_pca,center = train_mean, scale = FALSE)
+
+library(keras)
+k_clear_session()
+model <- keras_model_sequential() %>% 
+    layer_dense(units = 64, activation = "relu", kernel_regularizer = regularizer_l2(0.001),
+                input_shape = dim(train_for_neural)[2]) %>% 
+    layer_dropout(rate = 0.5) %>%
+    layer_dense(units = 64, kernel_regularizer = regularizer_l2(0.001),activation = "relu") %>% 
+    layer_dropout(rate = 0.5) %>%
+    layer_dense(units = 1,kernel_regularizer = regularizer_l2(0.001), activation = "sigmoid") 
+model %>% compile(
+    optimizer = optimizer_rmsprop(lr=0.001), 
+    loss = "binary_crossentropy", 
+    metrics = c("accuracy")
+)
+```
+
+```{r}
+val_indices <- 1:10000
+
+set.seed(100)
+
+index <- sample(dim(train_for_neural)[1],10000,replace = FALSE)
+x_val=train_for_neural[index,]
+x_train=train_for_neural[-index,]
+
+y_val <- y[index]
+y_train <- y[-index]
+
+num_epochs <- 25
+model %>% fit(x_train, y_train,
+                epochs = num_epochs, batch_size = 128,validation_data = list(x_val, y_val))
+results <- model %>% evaluate(test_for_neural, test_final[,46])
+results
+table(predict_classes(model, test_for_neural),test_final[,46])
+```
+
