@@ -1,0 +1,82 @@
+---
+title: "Explore Dataset"
+author: "June Kim (jkim654)"
+date: "4/15/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+> Exploring dataset
+
+# Season Analysis 
+## What is the percentage of wins in each game location - Home (H), Away (A) or Neutral (N)?
+```{r}
+  RegularSeasonDetailedResults = read.csv("PrelimData2018/RegularSeasonDetailedResults_Prelim2018.csv")
+  Teams = read.csv("DataFiles/Teams.csv")
+  library(plyr)
+  library(ggplot2)
+
+  # calculate frequency
+  loc_freq = count(RegularSeasonDetailedResults$WLoc)
+  
+  # calculate percentage and round to 2sf
+  loc_freq['percentage'] = 100/sum(loc_freq$freq)*loc_freq$freq
+  loc_freq['percentage_r'] <- signif(loc_freq$percentage, digits = 3)
+  
+  # calculate center of each segment for label
+  loc_freq['pos'] <- cumsum(loc_freq$percentage) - loc_freq$percentage/2
+
+  # set levels for segments so can order to match labels
+  loc_freq$x <- factor(loc_freq$x, levels = rev(loc_freq$x))
+  
+  # pie chart
+  ggplot(loc_freq, aes(x="", y=percentage_r, fill = x))+
+    geom_bar(stat="identity")+coord_polar("y")+
+    ggtitle("% of games won at each location")+
+    geom_text(aes(y=pos, label=percentage_r))+theme(
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      axis.ticks = element_blank(),
+      axis.text = element_blank(),
+      panel.border = element_blank(),
+      panel.grid = element_blank()
+    )
+```
+We can definitely observe that nearly 60% of the wins occur at the winning teams' home stadium. 
+
+# Win percentage for all teams
+Are the same winners always winning? What were the top/least scoring teams across all seasons? March Madness involves 68 Teams in total, so let's see who are top/worst 34 teams. 
+
+```{r}
+# win freq
+team_Wfreq = count(RegularSeasonDetailedResults$WTeamID)
+team_Wfreq$x = as.factor(team_Wfreq$x)
+
+# lose freq
+team_Lfreq = count(RegularSeasonDetailedResults$LTeamID)
+team_Lfreq$x  = as.factor(team_Lfreq$x)
+
+# rename common name to merge
+colnames(team_Wfreq)[1] = "TeamID"
+colnames(team_Lfreq)[1] = "TeamID"
+team_Wfreq = merge(team_Wfreq, Teams, by = "TeamID")
+win_freq = merge(team_Wfreq,team_Lfreq, by = "TeamID")
+final_frequency = win_freq[-4:-5]
+colnames(final_frequency)[2] = "Win"
+colnames(final_frequency)[4] = "Lose"
+
+# calculate win percentage
+final_frequency["percentage"] = (100 / (final_frequency$Win + final_frequency$Lose)) * final_frequency$Win
+final_frequency$TeamID <- as.factor(final_frequency$TeamID)
+
+final_frequency$TeamID <- factor(final_frequency$TeamID, levels = final_frequency$TeamID[order(final_frequency$percentage)])
+
+## Question: What are top 34 teams? 
+head(final_frequency[order(-final_frequency$percentage),], n=34)
+
+## Question: What are worst 34 teams?
+head(final_frequency[order(final_frequency$percentage),], n=34)
+```
