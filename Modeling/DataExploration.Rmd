@@ -401,5 +401,3 @@ grid.arrange(p13,p14)
 ```
 
 > Modeling
-
-I am going to try using variables: points, fgm, ftm, fgm3, fta, dr, ast, stl, blk for logistic regression as they seem to be strong indicators of winning. 
