@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Season Analysis 
 ## What is the percentage of wins in each game location - Home (H), Away (A) or Neutral (N)?
+
 ```{r}
   RegularSeasonDetailedResults = read.csv("PrelimData2018/RegularSeasonDetailedResults_Prelim2018.csv")
   Teams = read.csv("DataFiles/Teams.csv")
@@ -48,7 +49,8 @@ knitr::opts_chunk$set(echo = TRUE)
 We can definitely observe that nearly 60% of the wins occur at the winning teams' home stadium. 
 
 # Win percentage for all teams
-Are the same winners always winning? What were the top/least scoring teams across all seasons? March Madness involves 68 Teams in total, so let's see who are top/worst 34 teams. 
+Are the same winners always winning? What were the top/least scoring teams across all seasons? 
+March Madness involves 68 Teams in total, so let's see who are top/worst 34 teams. 
 
 ```{r}
 # win freq
