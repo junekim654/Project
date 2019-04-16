@@ -75,10 +75,19 @@ final_frequency["percentage"] = (100 / (final_frequency$Win + final_frequency$Lo
 final_frequency$TeamID <- as.factor(final_frequency$TeamID)
 
 final_frequency$TeamID <- factor(final_frequency$TeamID, levels = final_frequency$TeamID[order(final_frequency$percentage)])
-
 ## Question: What are top 34 teams? 
-head(final_frequency[order(-final_frequency$percentage),], n=34)
+top.teams = head(final_frequency[order(-final_frequency$percentage),], n=34)
 
 ## Question: What are worst 34 teams?
-head(final_frequency[order(final_frequency$percentage),], n=34)
+bottom.teams = head(final_frequency[order(final_frequency$percentage),], n=34)
+
+# plot
+ ggplot(top.teams, aes(x=TeamName, y=percentage)) +
+  ylim(0, 100) +
+  ggtitle("Top 34 teams % of games won") +
+  geom_bar(stat='identity') +
+  xlab("Team Name") + theme(
+    axis.text.x = element_text(angle=90, hjust=1)
+  )
 ```
+Again, it is most likely that these 34 teams would be the winners in the future seasons as well. 
