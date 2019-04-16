@@ -1,5 +1,5 @@
 ---
-title: "Explore Dataset"
+title: "Explore Dataset & "
 author: "June Kim (jkim654)"
 date: "4/15/2019"
 output: html_document
@@ -13,7 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Season Analysis 
 ## What is the percentage of wins in each game location - Home (H), Away (A) or Neutral (N)?
-
 ```{r}
   RegularSeasonDetailedResults = read.csv("PrelimData2018/RegularSeasonDetailedResults_Prelim2018.csv")
   Teams = read.csv("DataFiles/Teams.csv")
@@ -49,8 +48,7 @@ knitr::opts_chunk$set(echo = TRUE)
 We can definitely observe that nearly 60% of the wins occur at the winning teams' home stadium. 
 
 # Win percentage for all teams
-Are the same winners always winning? What were the top/least scoring teams across all seasons? 
-March Madness involves 68 Teams in total, so let's see who are top/worst 34 teams. 
+Are the same winners always winning? What were the top/least winning teams across all seasons? March Madness involves 68 Teams in total, so let's see who are top/worst 34 teams. 
 
 ```{r}
 # win freq
@@ -75,6 +73,7 @@ final_frequency["percentage"] = (100 / (final_frequency$Win + final_frequency$Lo
 final_frequency$TeamID <- as.factor(final_frequency$TeamID)
 
 final_frequency$TeamID <- factor(final_frequency$TeamID, levels = final_frequency$TeamID[order(final_frequency$percentage)])
+
 ## Question: What are top 34 teams? 
 top.teams = head(final_frequency[order(-final_frequency$percentage),], n=34)
 
@@ -91,3 +90,316 @@ bottom.teams = head(final_frequency[order(final_frequency$percentage),], n=34)
   )
 ```
 Again, it is most likely that these 34 teams would be the winners in the future seasons as well. 
+
+# What were some of the best/worst performing team overall throughout the seasons? 
+```{r}
+Wscores = as.data.frame(RegularSeasonDetailedResults$WTeamID)
+colnames(Wscores)[1] = "TeamID"
+Wscores["Score"] = RegularSeasonDetailedResults$WScore
+
+Lscores = as.data.frame(RegularSeasonDetailedResults$LTeamID)
+colnames(Lscores)[1] = "TeamID"
+Lscores["Score"] = RegularSeasonDetailedResults$LScore
+
+AllScores = cbind(Wscores,Lscores)
+
+# calculate team with highest score
+AggScores = aggregate(Score ~ TeamID, AllScores,FUN="mean")
+AggScores = merge(AggScores, Teams, by = "TeamID")
+AggScores$TeamID = as.factor(AggScores$TeamID)
+AggScores$TeamID = factor(AggScores$TeamID, levels = AggScores$TeamID[order(AggScores$Score)])
+AggScores = AggScores[,-4:-5]
+
+# Top 34 scoring teams
+head(AggScores[order(-AggScores$Score), ], n=34)
+
+# Worst 34 scoring teams
+head(AggScores[order(AggScores$Score), ], n=34)
+```
+
+## Question: Does higher average point score mean more winning? That is, is points scored correlated to the game result?
+```{r}
+Wscor <- as.data.frame(RegularSeasonDetailedResults$WTeamID)
+colnames(Wscor)[1] <- "TeamID"
+Wscor['Score'] <- RegularSeasonDetailedResults$WScore
+Wscor['Result'] <- 'Win'
+
+Lscor <- as.data.frame(RegularSeasonDetailedResults$LTeamID)
+colnames(Lscor)[1] <- "TeamID"
+Lscor['Score'] <- RegularSeasonDetailedResults$LScore
+Lscor['Result'] <- 'Lose'
+
+AllScores2 = rbind(Lscor,Wscor)
+
+# Game result relative to total scores
+ggplot(AllScores2, aes(x=Score,y=Result,fill=Result,colour=Result)) +
+  xlim(0,150) + ggtitle("Result of the match to points scored") +
+  geom_point(stat="identity")+
+  xlab("Point Scored in Game")+
+  ylab("Result")
+
+# Calculate win probability based on scores
+Wscores_freq <- as.data.frame(count(Wscor$Score))
+Lscores_freq <- as.data.frame(count(Lscor$Score))
+Scores_prob <- merge(Wscores_freq, Lscores_freq, by=c("x"="x"), all=TRUE)
+colnames(Scores_prob)<- c("score","win","lose")
+
+# function for calculating probability
+probability <- function(x){
+     x$win / (x$win + x$lose)
+}
+Scores_prob['probability'] <- probability(Scores_prob)
+
+# What is the relationship in graph?
+plot(Scores_prob$score,Scores_prob$probability,pch=19,xlab="Score",ylab="Probability of winning",main="Chances of winning relationship with Scores",col="darkblue")
+```
+Some of the matches had a situation where they scored high but ended up losing. 
+
+# Win probability across features
+How influential are each features on the result of the game?
+
+```{r,warning=FALSE,message=FALSE}
+
+library(gridExtra)
+
+# pts = points scored in game
+# fgm = 
+# fgm3 = 
+# fga = 
+# fga3 = 
+# ftm = 
+# fta = 
+# ast = assist
+# or = 
+# to = 
+# stl = steal
+# blk = block
+# pf = 
+
+# win probability based on fgm
+wgfm = as.data.frame(count(RegularSeasonDetailedResults$WFGM))
+lgfm = as.data.frame(count(RegularSeasonDetailedResults$LFGM))
+fgm_prob = merge(wgfm,lgfm,by=c("x"="x"),all=T)
+names(fgm_prob) = c("fgm","win","lose")
+fgm_prob["prob"] = probability(fgm_prob)
+
+# win probability based on fgm3
+wgfm3 = as.data.frame(count(RegularSeasonDetailedResults$WFGM3))
+lgfm3 = as.data.frame(count(RegularSeasonDetailedResults$LFGM3))
+fgm3_prob = merge(wgfm3,lgfm3,by=c("x"="x"),all=T)
+names(fgm3_prob) = c("fgm3","win","lose")
+fgm3_prob["prob"] = probability(fgm3_prob)
+
+# win probability based on fga 
+wfga = as.data.frame(count(RegularSeasonDetailedResults$WFGA))
+lfga = as.data.frame(count(RegularSeasonDetailedResults$LFGA))
+fga_prob = merge(wfga,lfga,by=c("x"="x"),all=T)
+names(fga_prob) = c("fga","win","lose")
+fga_prob["prob"] = probability(fga_prob)
+
+# win probability based on fga3
+wfga3 = as.data.frame(count(RegularSeasonDetailedResults$WFGA3))
+lfga3 = as.data.frame(count(RegularSeasonDetailedResults$LFGA3))
+fga3_prob = merge(wfga,lfga,by=c("x"="x"),all=T)
+names(fga3_prob) = c("fga3","win","lose")
+fga3_prob["prob"] = probability(fga3_prob)
+
+# win probability based on ftm
+wftm = as.data.frame(count(RegularSeasonDetailedResults$WFTM))
+lftm = as.data.frame(count(RegularSeasonDetailedResults$LFTM))
+ftm_prob = merge(wftm,lftm,by=c("x"="x"),all=T)
+names(ftm_prob) = c("ftm","win","lose")
+ftm_prob["prob"] = probability(ftm_prob)
+
+# win probability based on fta
+wfta = as.data.frame(count(RegularSeasonDetailedResults$WFTA))
+lfta = as.data.frame(count(RegularSeasonDetailedResults$LFTA))
+fta_prob = merge(wfta,lfta,by=c("x"="x"),all=T)
+names(fta_prob) = c("fta","win","lose")
+fta_prob["prob"] = probability(fta_prob)
+
+# win probability based on ast
+wast = as.data.frame(count(RegularSeasonDetailedResults$WAst))
+last = as.data.frame(count(RegularSeasonDetailedResults$LAst))
+ast_prob = merge(wast,last,by=c("x"="x"),all=T)
+names(ast_prob) = c("ast","win","lose")
+ast_prob["prob"] = probability(ast_prob)
+
+# win probability based on or
+wor = as.data.frame(count(RegularSeasonDetailedResults$WOR))
+lor  = as.data.frame(count(RegularSeasonDetailedResults$LOR))
+or_prob = merge(wor,lor,by=c("x"="x"),all=T)
+names(or_prob) = c("or","win","lose")
+or_prob["prob"] = probability(or_prob)
+
+# win probability based on to
+wdr = as.data.frame(count(RegularSeasonDetailedResults$WDR))
+ldr = as.data.frame(count(RegularSeasonDetailedResults$LDR))
+dr_prob = merge(wdr,ldr,by=c("x"="x"),all=T)
+names(dr_prob) = c("dr","win","lose")
+dr_prob["prob"] = probability(dr_prob)
+
+# win probability based on to
+wto = as.data.frame(count(RegularSeasonDetailedResults$WTO))
+lto = as.data.frame(count(RegularSeasonDetailedResults$LTO))
+to_prob = merge(wto,lto,by=c("x"="x"),all=T)
+names(to_prob) = c("to","win","lose")
+to_prob["prob"] = probability(to_prob)
+
+# win probability based on stl
+wstl = as.data.frame(count(RegularSeasonDetailedResults$WStl))
+lstl = as.data.frame(count(RegularSeasonDetailedResults$LStl))
+stl_prob = merge(wstl,lstl,by=c("x"="x"),all=T)
+names(stl_prob) = c("stl","win","lose")
+stl_prob["prob"] = probability(stl_prob)
+
+# win probability based on blk
+wblk = as.data.frame(count(RegularSeasonDetailedResults$WBlk))
+lblk = as.data.frame(count(RegularSeasonDetailedResults$LBlk))
+blk_prob = merge(wblk,lblk,by=c("x"="x"),all=T)
+names(blk_prob) = c("blk","win","lose")
+blk_prob["prob"] = probability(blk_prob)
+
+# win probability based on pf
+wpf = as.data.frame(count(RegularSeasonDetailedResults$WPF))
+lpf = as.data.frame(count(RegularSeasonDetailedResults$LPF))
+pf_prob = merge(wpf,lpf,by=c("x"="x"),all=T)
+names(pf_prob) = c("pf","win","lose")
+pf_prob["prob"] = probability(pf_prob)
+
+#---graph---#
+
+p1 <- ggplot(Scores_prob, aes(x=score, y=probability)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("Points Scored in Game") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p2 <- ggplot(fgm_prob, aes(x=fgm, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("fgm") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p3 <- ggplot(fga_prob, aes(x=fga, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("fga") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p4 <- ggplot(fgm3_prob, aes(x=fgm3, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("fgm3") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p5 <- ggplot(fga3_prob, aes(x=fga3, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("fga3") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p6 <- ggplot(ftm_prob, aes(x=ftm, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("ftm") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p7 <- ggplot(fta_prob, aes(x=fta, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("fta") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p8 <- ggplot(or_prob, aes(x=or, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("or") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p9 <- ggplot(dr_prob, aes(x=dr, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("dr") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p10 <- ggplot(ast_prob, aes(x=ast, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("ast") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p11 <- ggplot(to_prob, aes(x=to, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("to") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p12 <- ggplot(stl_prob, aes(x=stl, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("stl") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p13 <- ggplot(blk_prob, aes(x=blk, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("blk") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+p14 <- ggplot(pf_prob, aes(x=pf, y=prob)) +
+  geom_point(stat='identity') +
+  geom_smooth() +
+  ylim(0, 1) +
+  xlab("pf") + 
+  ylab('Win Probability') +
+  theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
+  theme(aspect.ratio=1)
+
+grid.arrange(p1, p2, p3, p4, p5,p6)
+grid.arrange(p7,p8,p9,p10,p11,p12)
+grid.arrange(p13,p14)
+```
+
+> Modeling
+
+I am going to try using variables: points, fgm, ftm, fgm3, fta, dr, ast, stl, blk for logistic regression as they seem to be strong indicators of winning. 
