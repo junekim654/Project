@@ -1,8 +1,9 @@
-# Stat-432-Project
+# Final Project Report
 
 # Predict win/lose of each game of March Madness for year 2018
-## Team Scorpion
-## June Kim (jkim654), Hoyin Lau (hlau4), Xiaomei Sun (xsun56), Taiga Hasegawa (taigah2), Leo Franco Soto (francst2)
+Team Scorpion
+
+June Kim (jkim654), Hoyin Lau (hlau4), Xiaomei Sun (xsun56), Taiga Hasegawa (taigah2), Leo Franco Soto (francst2)
 
 # Introduction 
 ...data source info
