@@ -6,7 +6,12 @@ Team Scorpion
 June Kim (jkim654), Hoyin Lau (hlau4), Xiaomei Sun (xsun56), Taiga Hasegawa (taigah2), Leo Franco Soto (francst2)
 
 # Introduction 
-The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship.
+The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship. [more info on NCAA]
+
+The data is from Kaggle machine learning competition hosted by Google Cloud and NCAA 2018. It is a historical data collecting from year 1985 to 2018 (i.e. season 2017-2018, since this year's season is 2018-2019).^[1]
+
+[1] link to data
+
 
 ...data source info
 ...comprensive intro to data
