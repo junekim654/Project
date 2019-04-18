@@ -1,16 +1,25 @@
 # Stat-432-Project
 
-## Presentation (April 17 - May 1, 2019)
-Each of the team will be given 12 minutes in class to present the project. Each team can have 2~3 (no more than 3) speakers to present your work. The presentation will be evaluated based on:
+# Predict win/lose of each game of March Madness for year 2018
+## Team Scorpion
+## June Kim (jkim654), Hoyin Lau (hlau4), Xiaomei Sun (xsun56), Taiga Hasegawa (taigah2), Leo Franco Soto (francst2)
 
-    Clarity: introduce the background, explain the motivation, challenge, and present the results and findings.
-    Fluency: oral presentation.
-    Pace: transition between speakers, no rush.
-    Time-Control: no overtime.
-    Technology (bonus): graphs, videos, demos, anything cool.
+# Introduction 
+...data source info
+...comprensive intro to data
 
-## Final Report
-The final report of your analysis is due by Sunday, May 5, 11:59 PM. It should be submitted online via Compass by your group contact member.
+# Data Exploration
+...summary stats
+...viz
+
+# Data Modeling 
+...
+...
+
+# Conclusion
+..
+..
+
 
 As a group, you will submit files as you would for homework which include a .pdf/.html and .Rmd file. If your data is less than 10MB, you should submit the data too. Otherwise, you should provide a shared link to your actual cleaned R data (using, for example, google drive). Your report must contain the following:
 
