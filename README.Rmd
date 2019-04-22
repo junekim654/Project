@@ -14,8 +14,8 @@ The motivation behind this project is that it is difficult to correctly predict 
 
 The data is from Kaggle machine learning competition hosted by Google Cloud and NCAA 2018. It is a historical data collecting from year 1985 to 2018 (i.e. season 2017-2018, since this year's season is 2018-2019)[1].
 
-[1] link to data
-
+[1] https://www.kaggle.com/c/mens-machine-learning-competition-2018/data
+[2] We need a link to the CLEANED data too
 
 ...data source info
 ...comprensive intro to data
