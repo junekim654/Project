@@ -1,16 +1,13 @@
-# Final Project Report
 
-# Predict win/lose of each game of March Madness for year 2018
-Team Scorpion
-
-June Kim (jkim654), Hoyin Lau (hlau4), Xiaomei Sun (xsun56), Taiga Hasegawa (taigah2), Leo Franco Soto (francst2)
+Title: Predict win/lose of each game of March Madness for year 2018
+Author: Team Scorpion - June Kim (jkim654), Hoyin Lau (hlau4), Xiaomei Sun (xsun56), Taiga Hasegawa (taigah2), Leo Franco Soto (francst2)
 
 # Introduction 
 The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship. [more info on NCAA]
 
 The motivation behind this project is that it is difficult to correctly predict the outcome of a sports game, especially group sports, like basketball. The ability to accurately predict the win/loss could help sports betting significantly. In basketball game data, with large datasets and detailed variables like the number of 2 pointers/3 pointers in a given game -- we, as data scientists, can utilize such extensively useful information and provide insight on the outcome of each game, which is invaluable to sports bettors. 
 
-The data is from Kaggle machine learning competition hosted by Google Cloud and NCAA 2018. It is a historical data collecting from year 1985 to 2018 (i.e. season 2017-2018, since this year's season is 2018-2019).^[1]
+The data is from Kaggle machine learning competition hosted by Google Cloud and NCAA 2018. It is a historical data collecting from year 1985 to 2018 (i.e. season 2017-2018, since this year's season is 2018-2019)[1].
 
 [1] link to data
 
