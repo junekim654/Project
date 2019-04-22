@@ -23,8 +23,8 @@ The data is from Kaggle machine learning competition hosted by Google Cloud and 
 ...viz
 
 # Data Modeling 
-...
-...
+...approaches
+...goal
 
 # Conclusion
 ..
