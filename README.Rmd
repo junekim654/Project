@@ -8,7 +8,15 @@ output: pdf_document
 
 
 # Introduction 
-The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship. [more info on NCAA]
+The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship. March Madness was first created in 1939 by the National Association of Basketball Coaches and was pitched by Harold Olsen. The format of the tournament are in rounds in the following order (taken from wikipedia.org/wiki/NCAA_Division_I_Men's_Basketball_Tournament):
+
+- The First Four
+- The First Round (the Round of 64)
+- The Second Round (the Round of 32)
+- The Regional Semi-finals (participating teams are known popularly as the "Sweet Sixteen")
+- The Regional Finals (participating teams are known commonly as the "Elite Eight")
+- The National Semi-finals (participating teams are referred to officially as the "Final Four")
+- The National Championship
 
 The motivation behind this project is that it is difficult to correctly predict the outcome of a sports game, especially group sports, like basketball. The ability to accurately predict the win/loss could help sports betting significantly. In basketball game data, with large datasets and detailed variables like the number of 2 pointers/3 pointers in a given game -- we, as data scientists, can utilize such extensively useful information and provide insight on the outcome of each game, which is invaluable to sports bettors. 
 
