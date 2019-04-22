@@ -1,4 +1,3 @@
-
 ---
 title: "Predict win/lose of each game of March Madness for year 2018 "
 author: "Team Scorpion - June Kim (jkim654), Hoyin Lau (hlau4), Xiaomei Sun (xsun56), Taiga Hasegawa (taigah2), Leo Franco Soto (francst2)"
@@ -7,8 +6,10 @@ output: pdf_document
 ---
 
 
-# Introduction 
-The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship. March Madness was first created in 1939 by the National Association of Basketball Coaches and was pitched by Harold Olsen. The format of the tournament are in rounds in the following order (taken from wikipedia.org/wiki/NCAA_Division_I_Men's_Basketball_Tournament):
+## Introduction 
+The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship. March Madness was first created in 1939 by the National Association of Basketball Coaches and was pitched by Harold Olsen. 
+
+The format of the tournament are in rounds in the following order (taken from wikipedia.org/wiki/NCAA_Division_I_Men's_Basketball_Tournament):
 
 - The First Four
 - The First Round (the Round of 64)
