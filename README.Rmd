@@ -5,7 +5,8 @@ date: "5/5/2019"
 output: pdf_document
 ---
 
-## Introduction 
+# Introduction 
+
 The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship. March Madness was first created in 1939 by the National Association of Basketball Coaches and was pitched by Harold Olsen. 
 
 The format of the tournament are in rounds in the following order (taken from wikipedia.org/wiki/NCAA_Division_I_Men's_Basketball_Tournament):
@@ -24,32 +25,33 @@ The data is from Kaggle Machine Learning Competition hosted by Google Cloud and 
 
 [1] https://www.kaggle.com/c/mens-machine-learning-competition-2018/data
 
-The original data from Kaggle Machine Learning Competitions had xx variables with xx observations. For this project, we have cleaned the dataset leaving us with xx variables and xx observations. 
+# Data Exploration
 
-```{r}
-    # cleaned data
-    train_X = fread("./train_X.csv")
-    train_y = fread("./train_y.csv")
-    
-    test_X = fread("./test_X.csv")
-    test_y = fread("./train_y.csv")
-    
-    glimpse(train_X)
-    glimpse(train_y)
-    
-    glimpse(test_X)
-    glimpse(test_y)
-```
+The original data from Kaggle Machine Learning Competitions had xx variables with xx observations. For this project, we have cleaned the dataset leaving us with xx variables and xx observations[2].
+
+[2] google drive link to train_X, train_y, test_X, test_y needed
+
 ...about train_X, train_y, test_X, test_y
 ...comprensive intro to data
 
-# Data Exploration
-The purpose of data exploration was to figure out interesting facts about the dataset. 
+The dataset contains information about the regular season before the March Madness. Studies on the performance on regular seasons for the teams presented directly influences whether or not they make it to the March Madness itself. Therefore, we have conducted seasonal analysis and overall performance of each team. 
+
+## Season Analysis 
+First of all, the data exploration started with the question of "is there a home advantage?". 
+...graphs
+...explain
+
+## Team Analysis
+...graphs
+...explain
+
 
 
 # Data Modeling 
-...approaches
 ...goal
+...approaches
+...why this approach
+...which had the best stats (MSE, RMSE, accuracy,etc) - result
 
 # Conclusion
 ..resulting conclusions from the modeling (i.e. who has more chance of winning than whom...)
