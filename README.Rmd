@@ -28,11 +28,17 @@ The original data from Kaggle Machine Learning Competitions had xx variables wit
 
 ```{r}
     # cleaned data
-    train_X = read.csv("./train_X.csv")
-    train_y = read.csv("./train_y.csv")
+    train_X = fread("./train_X.csv")
+    train_y = fread("./train_y.csv")
     
-    test_X = read.csv("./test_X.csv")
-    test_y = read.csv("./train_y.csv")
+    test_X = fread("./test_X.csv")
+    test_y = fread("./train_y.csv")
+    
+    glimpse(train_X)
+    glimpse(train_y)
+    
+    glimpse(test_X)
+    glimpse(test_y)
 ```
 ...about train_X, train_y, test_X, test_y
 ...comprensive intro to data
