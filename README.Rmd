@@ -24,7 +24,7 @@ The data is from Kaggle Machine Learning Competition hosted by Google Cloud and 
 
 [1] https://www.kaggle.com/c/mens-machine-learning-competition-2018/data
 
-The original data from Kaggle Machine Learning Competitions had xx variables with xx observations. For this project, we have cleaned the dataset. 
+The original data from Kaggle Machine Learning Competitions had xx variables with xx observations. For this project, we have cleaned the dataset leaving us with xx variables and xx observations. 
 
 ```{r}
     # cleaned data
@@ -34,7 +34,6 @@ The original data from Kaggle Machine Learning Competitions had xx variables wit
     test_X = read.csv("./test_X.csv")
     test_y = read.csv("./train_y.csv")
 ```
-
 ...about train_X, train_y, test_X, test_y
 ...comprensive intro to data
 
