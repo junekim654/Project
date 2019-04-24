@@ -38,8 +38,8 @@ The original data from Kaggle Machine Learning Competitions had xx variables wit
 ...comprensive intro to data
 
 # Data Exploration
-...summary stats
-...viz
+The purpose of data exploration was to figure out interesting facts about the dataset. 
+
 
 # Data Modeling 
 ...approaches
