@@ -52,8 +52,9 @@ The purpose of data exploration was to figure out interesting facts about the da
 ...goal
 
 # Conclusion
-..
-..
+..resulting conclusions from the modeling (i.e. who has more chance of winning than whom...)
+..pitfalls of the analysis
+..what needs to be improved
 
 As a group, you will submit files as you would for homework which include a .pdf/.html and .Rmd file. If your data is less than 10MB, you should submit the data too. Otherwise, you should provide a shared link to your actual cleaned R data (using, for example, google drive). Your report must contain the following:
 
