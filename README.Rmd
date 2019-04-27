@@ -7,7 +7,7 @@ output: pdf_document
 
 # Introduction 
 
-The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship. March Madness was first created in 1939 by the National Association of Basketball Coaches and was pitched by Harold Olsen. 
+The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship. March Madness was first created in 1939 by the National Association of Basketball Coaches and was pitched by Harold Olsen. And currently millions of people in America fill out a bracket to correctly predict the outcome of the entire event.
 
 The format of the tournament are in rounds in the following order (taken from wikipedia.org/wiki/NCAA_Division_I_Men's_Basketball_Tournament):
 
@@ -19,7 +19,7 @@ The format of the tournament are in rounds in the following order (taken from wi
 - The National Semi-finals (participating teams are referred to officially as the "Final Four")
 - The National Championship
 
-The motivation behind this project is that it is difficult to correctly predict the outcome of a sports game, especially group sports, like basketball. The ability to accurately predict the win/loss could help sports betting significantly. In basketball game data, with large datasets and detailed variables like the number of 2 pointers/3 pointers in a given game -- we, as data scientists, can utilize such extensively useful information and provide insight on the outcome of each game, which is invaluable to sports bettors. 
+The motivation behind this project is to correctly predict the outcome of a sports game. The ability to accurately predict the win/loss could help sports betting significantly. We will utilize the basketball game data, like the number of 2 pointers/3 pointers in a given game, to draw out useful information and provide insight on the outcome of each game, which is invaluable to sports bettors and viewers who just want to have a fun bet with friends. 
 
 The data is from Kaggle Machine Learning Competition hosted by Google Cloud and NCAA 2018. It is a historical data collecting from year 1985 to 2018 (i.e. season 2017-2018, since this year's season is 2018-2019)[1].
 
@@ -29,7 +29,7 @@ The data is from Kaggle Machine Learning Competition hosted by Google Cloud and 
 
 The original data from Kaggle Machine Learning Competitions had xx variables with xx observations. For this project, we have cleaned the dataset leaving us with xx variables and xx observations[2].
 
-[2] google drive link to train_X, train_y, test_X, test_y needed
+[2] github/website link to train_X, train_y, test_X, test_y datsets
 
 ...about train_X, train_y, test_X, test_y
 ...comprensive intro to data
