@@ -19,9 +19,9 @@ The format of the tournament are in rounds in the following order (taken from wi
 - The National Semi-finals (participating teams are referred to officially as the "Final Four")
 - The National Championship
 
-The motivation behind this project is to correctly predict the outcome of a sports game. The ability to accurately predict the win/loss could help sports betting significantly. We will utilize the basketball game data, like the number of 2 pointers/3 pointers in a given game, to draw out useful information and provide insight on the outcome of each game, which is invaluable to sports bettors and viewers who just want to have a fun bet with friends. 
+The motivation behind this project is to correctly predict the outcome of a sports game. The ability to accurately predict the win/loss could help sports betting significantly. We will utilize the basketball game data, like the number of 2 pointers/3 pointers in a given game, to draw out useful information and provide insight on the outcome of each game, which is invaluable to sports bettors and viewers who just want to have a fun bet with friends. The data is from Kaggle Machine Learning Competition hosted by Google Cloud and NCAA 2018. It is a historical data collecting from year 1985 to 2018 (i.e. season 2017-2018, since this year's season is 2018-2019)[1].
 
-The data is from Kaggle Machine Learning Competition hosted by Google Cloud and NCAA 2018. It is a historical data collecting from year 1985 to 2018 (i.e. season 2017-2018, since this year's season is 2018-2019)[1].
+In this project, the goal is to...[quantitative goal] by using ..... and determine which model gives the most accurate predictions in year 2018. 
 
 [1] https://www.kaggle.com/c/mens-machine-learning-competition-2018/data
 
@@ -61,11 +61,11 @@ Before looking into NCAA Tournament results, we looked at the results from regul
 
 As a group, you will submit files as you would for homework which include a .pdf/.html and .Rmd file. If your data is less than 10MB, you should submit the data too. Otherwise, you should provide a shared link to your actual cleaned R data (using, for example, google drive). Your report must contain the following:
 
-    Project title
-    Group Member Info
-    Introduction and literature review (1 - 2 pages)
-        Data source information (provide a link to your data source)
-        You must have a comprehensive introduction of the data (no analysis) and the scientific goal
+    Project title - done 
+    Group Member Info - done 
+    Introduction and literature review (1 - 2 pages) - done
+        Data source information (provide a link to your data source) - done
+        You must have a comprehensive introduction of the data (no analysis) and the scientific goal - done
         You must review the literature (or relative sources) and report existing (possibly online) analyses results on this dataset
     Summary statistics and data visualization (less than 5 pages)
         You should provide a comprehensive summary of the data using tools we introduced
