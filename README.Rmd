@@ -32,7 +32,7 @@ The original data from Kaggle Machine Learning Competitions had xx variables wit
 [2] github/website link to train_X, train_y, test_X, test_y datsets
 
 ...about train_X, train_y, test_X, test_y
-...comprensive intro to data
+...print summary stats from train_X, train_y (combined)
 
 The dataset contains information about the regular season before the March Madness. Studies on the performance on regular seasons for the teams presented directly influences whether or not they make it to the March Madness itself. Therefore, we have conducted seasonal analysis and overall performance of each team. 
 
