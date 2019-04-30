@@ -72,13 +72,63 @@ How teams perform during regular seasons affect their chances of getting into th
 ```
 From looking at the graph, it is possible to witness 59.5% of the games won were at home while 30.6% were games won away. Neutral locations seem to be the worst options for teams to win, leaving 9.9% of the games won at this location. From this, we can see that locations may have a big impact in the chance of winning. 
 
-
-
 ## Team Analysis
 
+Teams can be evaluated in terms of (1) goals they score in average or (2) win percentage across seasons. First, we considered the win percentage across the regular season. The questions that could be answered from this analysis are: who are the top 34 teams that frequently wins the game in the regular seasons? Are they ones who make it to the March Madness most frequently? 
 
+```{r, echo = FALSE}
+# win freq
+team_Wfreq = count(RegularSeasonDetailedResults$WTeamID)
+team_Wfreq$x = as.factor(team_Wfreq$x)
+# lose freq
+team_Lfreq = count(RegularSeasonDetailedResults$LTeamID)
+team_Lfreq$x  = as.factor(team_Lfreq$x)
+# rename common name to merge
+colnames(team_Wfreq)[1] = "TeamID"
+colnames(team_Lfreq)[1] = "TeamID"
+team_Wfreq = merge(team_Wfreq, Teams, by = "TeamID")
+win_freq = merge(team_Wfreq,team_Lfreq, by = "TeamID")
+final_frequency = win_freq[-4:-5]
+colnames(final_frequency)[2] = "Win"
+colnames(final_frequency)[4] = "Lose"
+# calculate win percentage
+final_frequency["percentage"] = (100 / (final_frequency$Win + final_frequency$Lose)) * final_frequency$Win
+final_frequency$TeamID <- as.factor(final_frequency$TeamID)
+final_frequency$TeamID <- factor(final_frequency$TeamID, levels = final_frequency$TeamID[order(final_frequency$percentage)])
+## Question: What are top 34 teams? 
+top.teams = head(final_frequency[order(-final_frequency$percentage),], n=34)
+## Question: What are worst 34 teams?
+bottom.teams = head(final_frequency[order(final_frequency$percentage),], n=34)
+# plot
+ ggplot(top.teams, aes(x=TeamName, y=percentage)) +
+  ylim(0, 100) +
+  ggtitle("Top 34 teams % of games won") +
+  geom_bar(stat='identity') +
+  xlab("Team Name") + theme(
+    axis.text.x = element_text(angle=90, hjust=1)
+  )
+```
 
-
+By goals they scores in average...
+```{r, echo = FALSE}
+Wscores = as.data.frame(RegularSeasonDetailedResults$WTeamID)
+colnames(Wscores)[1] = "TeamID"
+Wscores["Score"] = RegularSeasonDetailedResults$WScore
+Lscores = as.data.frame(RegularSeasonDetailedResults$LTeamID)
+colnames(Lscores)[1] = "TeamID"
+Lscores["Score"] = RegularSeasonDetailedResults$LScore
+AllScores = cbind(Wscores,Lscores)
+# calculate team with highest score
+AggScores = aggregate(Score ~ TeamID, AllScores,FUN="mean")
+AggScores = merge(AggScores, Teams, by = "TeamID")
+AggScores$TeamID = as.factor(AggScores$TeamID)
+AggScores$TeamID = factor(AggScores$TeamID, levels = AggScores$TeamID[order(AggScores$Score)])
+AggScores = AggScores[,-4:-5]
+# Top 34 scoring teams
+head(AggScores[order(-AggScores$Score), ], n=34)
+# Worst 34 scoring teams
+head(AggScores[order(AggScores$Score), ], n=34)
+```
 
 # Data Modeling 
 ...goal
