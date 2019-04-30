@@ -37,15 +37,17 @@ The original data from Kaggle Machine Learning Competitions had xx variables wit
 The dataset contains information about the regular season before the March Madness. Studies on the performance on regular seasons for the teams presented directly influences whether or not they make it to the March Madness itself. Therefore, we have conducted seasonal analysis and overall performance of each team. 
 
 ## Season Analysis 
-First of all, the data exploration started with the question of "is there a home advantage?". By calculating the percentage of wins by locations during regular season. How teams perform during regular seasons affect their chances of getting 
 
-Since games are played at different locations for both regular seasons and March Madness
+How teams perform during regular seasons affect their chances of getting into the March Madness. In this part, we have analyzed the seasonal performance of the teams that have historically made it into March Madness. First, we explored the relationship between the location of the game with the percentage of wins. The goal here was to find if percentage of wins are associated with the location. 
 
-Before looking into NCAA Tournament results, we looked at the results from regular seasons. The games are played at different locations from both regular seasons and during the March Madness. The following analysis hopes to find whether or not the locations of the match affect the game result. As a matter of fact, 60% of the winning games happened at the home stadium, which proves that there is a home advantage. 
+![graph]("image link")
+
+From looking at the graph, it is possible to witness 59.5% of the games won were at home while 30.6% were games won away. Neutral locations seem to be the worst options for teams to win, leaving 9.9% of the games won at this location. From this, we can see that locations may have a big impact in the chance of winning. 
 
 ## Team Analysis
-...graphs
-...explain
+
+
+
 
 
 # Data Modeling 
