@@ -51,7 +51,7 @@ First of all, the data exploration started with the question of "is there a home
 ...goal
 ...approaches
 ...why this approach
-...which had the best stats (MSE, RMSE, accuracy,etc) - result
+...which had the best stats (MSE, RMSE, accuracy,etc) - result (model evaluation)
 
 # Conclusion
 ..resulting conclusions from the modeling (i.e. who has more chance of winning than whom...)
