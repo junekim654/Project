@@ -76,6 +76,8 @@ From looking at the graph, it is possible to witness 59.5% of the games won were
 
 Teams can be evaluated in terms of (1) goals they score in average or (2) win percentage across seasons. First, we considered the win percentage across the regular season. The questions that could be answered from this analysis are: who are the top 34 teams that frequently wins the game in the regular seasons? Are they ones who make it to the March Madness most frequently? 
 
+From this exploration, it was possible to see that the top 34 teams with the highest % of games won are one of the most frequent teams playing at NCAA March Madness. For instance, Vilanova won in 2018 and it is one of the top 34 teams. Duke is also very strong team, always making it to the Elite Eight most of the seasons. 
+
 ```{r, echo = FALSE}
 # win freq
 team_Wfreq = count(RegularSeasonDetailedResults$WTeamID)
@@ -109,7 +111,8 @@ bottom.teams = head(final_frequency[order(final_frequency$percentage),], n=34)
   )
 ```
 
-By goals they scores in average...
+In terms of the number of goals scored, ...
+
 ```{r, echo = FALSE}
 Wscores = as.data.frame(RegularSeasonDetailedResults$WTeamID)
 colnames(Wscores)[1] = "TeamID"
@@ -131,6 +134,10 @@ head(AggScores[order(AggScores$Score), ], n=34)
 ```
 
 ## Winning Probability by Game Statistics
+
+Also, by exploring different game statistics that could be engineered further down the analysis, we can figure out which game statistics affect the result of the match. Game statistics are those that may contribute to the probability of winning. Points scores in game (pts), number of assists (ast), number of steals (stl) and number of blocks (blk) are some of the examples of "game statistics" in this report. 
+
+From this it is possible to see that...
 
 ``{r,warning=FALSE,message=FALSE,echo=FALSE}
 library(gridExtra)
@@ -226,6 +233,7 @@ lpf = as.data.frame(count(RegularSeasonDetailedResults$LPF))
 pf_prob = merge(wpf,lpf,by=c("x"="x"),all=T)
 names(pf_prob) = c("pf","win","lose")
 pf_prob["prob"] = probability(pf_prob)
+
 #---graph---#
 p1 <- ggplot(Scores_prob, aes(x=score, y=probability)) +
   geom_point(stat='identity') +
