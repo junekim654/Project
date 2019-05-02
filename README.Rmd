@@ -114,6 +114,7 @@ bottom.teams = head(final_frequency[order(final_frequency$percentage),], n=34)
 In terms of the number of goals scored, we see a different set of list. It is 
 
 ```{r, echo = FALSE}
+library(xtable)
 Wscores = as.data.frame(RegularSeasonDetailedResults$WTeamID)
 colnames(Wscores)[1] = "TeamID"
 Wscores["Score"] = RegularSeasonDetailedResults$WScore
