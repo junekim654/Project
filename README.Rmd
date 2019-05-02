@@ -133,27 +133,40 @@ head(AggScores[order(-AggScores$Score), ], n=34)
 head(AggScores[order(AggScores$Score), ], n=34)
 ```
 
-## Winning Probability by Game Statistics
+## Winning Probability by Basketball Statistics
 
-Also, by exploring different game statistics that could be engineered further down the analysis, we can figure out which game statistics affect the result of the match. Game statistics are those that may contribute to the probability of winning. Points scores in game (pts), number of assists (ast), number of steals (stl) and number of blocks (blk) are some of the examples of "game statistics" in this report. 
+Also, by exploring different basketball statistics that could be engineered further down the analysis, we can figure out which statistics affect the result of the match. Game statistics are those that may contribute to the probability of winning. Points scores in game (pts), number of assists (ast), number of steals (stl) and number of blocks (blk) are some of the examples of "game statistics" in this report. 
 
-From this it is possible to see that...
+For the purpose of exploration, we looked at 13 variables: 
+            * pts: points scored in game
+            * fgm: field goals made
+            * fgm3: 3-point field goals made
+            * fga: field goals attempted
+            * fga3: 3-point field goals attempted
+            * ftm: free throws made
+            * fta: free throws attempted
+            * ast: number of assists
+            * or: number of offensive rebounds
+            * to: number of turn-over
+            * stl: number of steals
+            * blk: number of blocks
+            * pf: number of personal fouls
 
 ``{r,warning=FALSE,message=FALSE,echo=FALSE}
 library(gridExtra)
 # pts = points scored in game
-# fgm = 
-# fgm3 = 
-# fga = 
-# fga3 = 
-# ftm = 
-# fta = 
+# fgm = field goals made
+# fgm3 = field goals made (3 points)
+# fga = field goals attempted
+# fga3 = field goals attempted (3 points)
+# ftm = free throws made
+# fta = free throws attempted
 # ast = assist
-# or = 
-# to = 
+# or = offensive rebounds
+# to = turn-over
 # stl = steal
 # blk = block
-# pf = 
+# pf = personal fouls
 
 # win probability based on fgm
 wgfm = as.data.frame(count(RegularSeasonDetailedResults$WFGM))
@@ -351,6 +364,8 @@ grid.arrange(p1, p2, p3, p4, p5,p6)
 grid.arrange(p7,p8,p9,p10,p11,p12)
 grid.arrange(p13,p14)
 ```
+From looking at the graphs, ....
+
 
 # Data Modeling 
 
