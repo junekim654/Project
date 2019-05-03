@@ -82,9 +82,11 @@ From this exploration, it was possible to see that the top 34 teams with the hig
 # win freq
 team_Wfreq = count(RegularSeasonDetailedResults$WTeamID)
 team_Wfreq$x = as.factor(team_Wfreq$x)
+
 # lose freq
 team_Lfreq = count(RegularSeasonDetailedResults$LTeamID)
 team_Lfreq$x  = as.factor(team_Lfreq$x)
+
 # rename common name to merge
 colnames(team_Wfreq)[1] = "TeamID"
 colnames(team_Lfreq)[1] = "TeamID"
@@ -93,14 +95,17 @@ win_freq = merge(team_Wfreq,team_Lfreq, by = "TeamID")
 final_frequency = win_freq[-4:-5]
 colnames(final_frequency)[2] = "Win"
 colnames(final_frequency)[4] = "Lose"
+
 # calculate win percentage
 final_frequency["percentage"] = (100 / (final_frequency$Win + final_frequency$Lose)) * final_frequency$Win
 final_frequency$TeamID <- as.factor(final_frequency$TeamID)
 final_frequency$TeamID <- factor(final_frequency$TeamID, levels = final_frequency$TeamID[order(final_frequency$percentage)])
+
 ## Question: What are top 34 teams? 
 top.teams = head(final_frequency[order(-final_frequency$percentage),], n=34)
 ## Question: What are worst 34 teams?
 bottom.teams = head(final_frequency[order(final_frequency$percentage),], n=34)
+
 # plot
  ggplot(top.teams, aes(x=TeamName, y=percentage)) +
   ylim(0, 100) +
@@ -114,7 +119,8 @@ bottom.teams = head(final_frequency[order(final_frequency$percentage),], n=34)
 In terms of the number of goals scored, we see a different set of list. It is 
 
 ```{r, echo = FALSE}
-library(xtable)
+library(knitr)
+
 Wscores = as.data.frame(RegularSeasonDetailedResults$WTeamID)
 colnames(Wscores)[1] = "TeamID"
 Wscores["Score"] = RegularSeasonDetailedResults$WScore
@@ -128,10 +134,12 @@ AggScores = merge(AggScores, Teams, by = "TeamID")
 AggScores$TeamID = as.factor(AggScores$TeamID)
 AggScores$TeamID = factor(AggScores$TeamID, levels = AggScores$TeamID[order(AggScores$Score)])
 AggScores = AggScores[,-4:-5]
+
 # Top 34 scoring teams
-head(AggScores[order(-AggScores$Score), ], n=34)
+kable(head(AggScores[order(-AggScores$Score), ], n=34))
+
 # Worst 34 scoring teams
-head(AggScores[order(AggScores$Score), ], n=34)
+kable(head(AggScores[order(AggScores$Score), ], n=34))
 ```
 
 ## Winning Probability by Basketball Statistics
