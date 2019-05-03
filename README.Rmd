@@ -21,20 +21,13 @@ The format of the tournament are in rounds in the following order (taken from wi
 
 The motivation behind this project is to correctly predict the outcome of a sports game. The ability to accurately predict the win/loss could help sports betting significantly. We will utilize the basketball game data, like the number of 2 pointers/3 pointers in a given game, to draw out useful information and provide insight on the outcome of each game, which is invaluable to sports bettors and viewers who just want to have a fun bet with friends. The data is from Kaggle Machine Learning Competition hosted by Google Cloud and NCAA 2018. It is a historical data collecting from year 1985 to 2018 (i.e. season 2017-2018, since this year's season is 2018-2019)[1].
 
-In this project, the goal is to...[quantitative goal] by using ..... and determine which model gives the most accurate predictions in year 2018. 
-
-[1] https://www.kaggle.com/c/mens-machine-learning-competition-2018/data
-
-There are other people who use the same dataset to do different analyses. The most common topics are the overall rating of teams and players, predicting future best team, how different coaches will have impact on the performance of the teams. These are the topics most people have interest with and will spend a lot of time to discuss about. There are lots of very interesting analyses, and they are totally different from the others. They are trying to predict the salary of different players based on their performance in game, how long are they staying, and how well they do from time to time. There is also a prediction of the salary of different coaches based on how well their coaching team performed. Similarly, there are also other people analyze the win and lose rate, but the way we analyze is different from other people. We are using the overall past data, such as scores from the pasts, location, number of three points and free throws and many other variables to predict the win rate, while other people only used the current data or only few variables to predict the win rate. 
+There are other people who use the same dataset to do different analyses. The most common topics are the overall rating of teams and players, predicting future best team, how different coaches will have impact on the performance of the teams. These are the topics most people have interest with and will spend a lot of time to discuss about. There are lots of very interesting analyses, and they are totally different from the others. They are trying to predict the salary of different players based on their performance in game, how long are they staying, and how well they do from time to time. There is also a prediction of the salary of different coaches based on how well their coaching team performed. Similarly, there are also other people analyze the win and lose rate, but the way we analyze is different from other people. We are using the overall past data, such as scores from the pasts, location, number of three points and free throws and many other variables to predict the win rate, while other people only used the current data or only few variables to predict the win rate. In this project, the goal is was to find the most accurate model to find the winning predictions for NCAA March Madness in year 2018. 
 
 # Data Exploration
 
 The original data from Kaggle Machine Learning Competitions had xx variables with xx observations. For this project, we have cleaned the dataset leaving us with xx variables and xx observations[2].
 
 [2] github/website link to train_X, train_y, test_X, test_y datsets
-
-...about train_X, train_y, test_X, test_y
-...print summary stats from train_X, train_y (combined)
 
 The dataset contains information about the regular season before the March Madness. Studies on the performance on regular seasons for the teams presented directly influences whether or not they make it to the March Madness itself. Therefore, we have conducted seasonal analysis and overall performance of each team. 
 
@@ -381,7 +374,7 @@ From looking at the graphs, ....
 # Data Modeling 
  Our goal is to get the most accurate predictions of NCAA tournament results in year 2018. To achieve this goal, we tried several machine learning methods, such as logistic regression, random forest, LDA and so on. Data modeling was divided into 3 parts: "Data Cleaning", "Feature Engineering", and "Statistical Modeling".  
 
-## DATA CLEANING
+## DATA Cleaning
   As we had already discussed, this project used many datasets and it was necessary to merge them and extract important features. First let's look through the dataset. The followings are the files we used. The data regarding the matchup before NCAA tournaments in 2018 was used as train data and the one of NCAA tournaments in 2018 was used as test data.  
   
 ![train_test_explanation](test_train.png)
@@ -459,8 +452,7 @@ Players_2018=Players_2018[Players_2018$PlayerName!="TEAM",]
 library(dplyr)
 library(tidyr)
 ```
-
-  We struggled dealing with Player_XXXX data and Event_XXXX data because other data was based on every matchup but these data was based on the player and event. There were two solutions to solve this problem.
+We struggled dealing with Player_XXXX data and Event_XXXX data because other data was based on every matchup but these data was based on the player and event. There were two solutions to solve this problem.
 
 1. Aggregate events by each match and merge with other data, using each matchup as ID.
 
@@ -748,7 +740,7 @@ colnames(train_X)[45]="player_score_2"
 
 ### Part3
 
-  Let's move onto test data. We wanted to make features of test data but we had to be careful when making them. We can't use the features we made in part1 because it will cause data leakage.  For example, we can easily know that it's impossible to get the details of matchup, such as winning/ losing points and winning/losing team possession before the match is actually done. So we have to delete the variables that we can't know before the matchup actually starts.  
+Let's move onto test data. We wanted to make features of test data but we had to be careful when making them. We can't use the features we made in part1 because it will cause data leakage.  For example, we can easily know that it's impossible to get the details of matchup, such as winning/ losing points and winning/losing team possession before the match is actually done. So we have to delete the variables that we can't know before the matchup actually starts.  
 
 ```{r eval=FALSE}
 #use the average ranking 
@@ -758,7 +750,7 @@ test$Lranking=apply(test[,199:362],1,function(x) mean(x,na.rm=TRUE))
 test=test[,c(-8:-362)]
 ```
   
-  However, we wanted to use the expected values of variables like winning/ losing points and winning/losing team possession as predictors. How can we get the expected value for test data? Here. we developed some algorithm like below. 
+However, we wanted to use the expected values of variables like winning/ losing points and winning/losing team possession as predictors. How can we get the expected value for test data? Here. we developed some algorithm like below. 
   
   1. when there was the same match up before
 
@@ -1013,3 +1005,5 @@ table(predict_classes(model, test_for_neural),test_final[,48])
 
 The best accuracy was achieved by both simple model using Pts difference: point difference between winning team and losing team and random forest. We can consider that this first one is part of the random forest. It is equivalent to the model where only points difference was considered at split in random forest. Consequently, it turned that our algorithm that predicted the expected value of points difference performed very well. 
 
+[1] https://www.kaggle.com/c/mens-machine-learning-competition-2018/data
+[2] 
