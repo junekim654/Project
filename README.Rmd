@@ -25,6 +25,8 @@ In this project, the goal is to...[quantitative goal] by using ..... and determi
 
 [1] https://www.kaggle.com/c/mens-machine-learning-competition-2018/data
 
+There are other people who use the same dataset to do different analyses. The most common topics are the overall rating of teams and players, predicting future best team, how different coaches will have impact on the performance of the teams. These are the topics most people have interest with and will spend a lot of time to discuss about. There are lots of very interesting analyses, and they are totally different from the others. They are trying to predict the salary of different players based on their performance in game, how long are they staying, and how well they do from time to time. There is also a prediction of the salary of different coaches based on how well their coaching team performed. Similarly, there are also other people analyze the win and lose rate, but the way we analyze is different from other people. We are using the overall past data, such as scores from the pasts, location, number of three points and free throws and many other variables to predict the win rate, while other people only used the current data or only few variables to predict the win rate. 
+
 # Data Exploration
 
 The original data from Kaggle Machine Learning Competitions had xx variables with xx observations. For this project, we have cleaned the dataset leaving us with xx variables and xx observations[2].
