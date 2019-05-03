@@ -1,15 +1,16 @@
 ---
 title: "Predict win/lose of each game of March Madness for year 2018"
-author: "Team Scorpion - June Kim (jkim654), Hoyin Lau (hlau4), Xiaomei Sun (xsun56), Taiga Hasegawa (taigah2), Leo Franco Soto (francst2)"
+author: Team Scorpion - June Kim (jkim654), Hoyin Lau (hlau4), Xiaomei Sun (xsun56),
+  Taiga Hasegawa (taigah2), Leo Franco Soto (francst2)
 date: "5/5/2019"
-output: pdf_document
+output: word_document
 ---
 
 # Introduction 
 
 The NCAA Division I Men's Basketball Tournament, also known as NCAA March Madness happens every year in spring. It features 68 college basketball teams from Division I level of the National Collegiate Atheletic Association (NCAA) to determine the national championship. March Madness was first created in 1939 by the National Association of Basketball Coaches and was pitched by Harold Olsen. And currently millions of people in America fill out a bracket to correctly predict the outcome of the entire event.
 
-The format of the tournament are in rounds in the following order (taken from wikipedia.org/wiki/NCAA_Division_I_Men's_Basketball_Tournament):
+The format of the tournament are in rounds in the following order[1]:
 
 - The First Four
 - The First Round (the Round of 64)
@@ -19,27 +20,35 @@ The format of the tournament are in rounds in the following order (taken from wi
 - The National Semi-finals (participating teams are referred to officially as the "Final Four")
 - The National Championship
 
-The motivation behind this project is to correctly predict the outcome of a sports game. The ability to accurately predict the win/loss could help sports betting significantly. We will utilize the basketball game data, like the number of 2 pointers/3 pointers in a given game, to draw out useful information and provide insight on the outcome of each game, which is invaluable to sports bettors and viewers who just want to have a fun bet with friends. The data is from Kaggle Machine Learning Competition hosted by Google Cloud and NCAA 2018. It is a historical data collecting from year 1985 to 2018 (i.e. season 2017-2018, since this year's season is 2018-2019)[1].
+The motivation behind this project is to correctly predict the outcome of a sports game. The ability to accurately predict the win/loss could help sports betting significantly. We will utilize the basketball game data, like the number of 2 pointers/3 pointers in a given game, to draw out useful information and provide insight on the outcome of each game, which is invaluable to sports bettors and viewers who just want to have a fun bet with friends. The data is from Kaggle Machine Learning Competition hosted by Google Cloud and NCAA 2018. It is a historical data collecting from year 1985 to 2018 (i.e. season 2017-2018, since this year's season is 2018-2019)[2].
 
 There are other people who use the same dataset to do different analyses. The most common topics are the overall rating of teams and players, predicting future best team, how different coaches will have impact on the performance of the teams. These are the topics most people have interest with and will spend a lot of time to discuss about. There are lots of very interesting analyses, and they are totally different from the others. They are trying to predict the salary of different players based on their performance in game, how long are they staying, and how well they do from time to time. There is also a prediction of the salary of different coaches based on how well their coaching team performed. Similarly, there are also other people analyze the win and lose rate, but the way we analyze is different from other people. We are using the overall past data, such as scores from the pasts, location, number of three points and free throws and many other variables to predict the win rate, while other people only used the current data or only few variables to predict the win rate. In this project, the goal is was to find the most accurate model to find the winning predictions for NCAA March Madness in year 2018. 
 
 # Data Exploration
 
-The original data from Kaggle Machine Learning Competitions had xx variables with xx observations. For this project, we have cleaned the dataset leaving us with xx variables and xx observations[2].
+The original data from Kaggle Machine Learning Competitions had 65 variables with 204,861 observations. For this project, we have cleaned the dataset leaving us with 48 variables and 204,861 observations. The links to the cleaned datasets are below:
 
-[2] github/website link to train_X, train_y, test_X, test_y datsets
+[Training Data](https://drive.google.com/open?id=1henbg-CbVdXcr8jnsLH7JRA0AuWriPoD)
+[Testing data](https://drive.google.com/file/d/1p6nr-kGy-orNEP8fEn0YjNgdI9Spo9aq/view?usp=sharing)
 
-The dataset contains information about the regular season before the March Madness. Studies on the performance on regular seasons for the teams presented directly influences whether or not they make it to the March Madness itself. Therefore, we have conducted seasonal analysis and overall performance of each team. 
+The training dataset has 204,727 observations and the testing dataset has 134 observations.
+
+The dataset contains information about the regular season before the March Madness and studies on the performance on regular seasons for the teams presented directly influences whether or not they make it to the March Madness itself. Therefore, we have conducted seasonal analysis and overall performance of each team before jumping into NCAA Tour results. 
 
 ## Season Analysis 
 
 How teams perform during regular seasons affect their chances of getting into the March Madness. In this part, we have analyzed the seasonal performance of the teams that have historically made it into March Madness. First, we explored the relationship between the location of the game with the percentage of wins. The goal here was to find if percentage of wins are associated with the location. 
 
 ```{r,echo=FALSE}
-  RegularSeasonDetailedResults = read.csv("PrelimData2018/RegularSeasonDetailedResults_Prelim2018.csv")
-  Teams = read.csv("DataFiles/Teams.csv")
+  RegularSeasonDetailedResults = read.csv("data/PrelimData2018/RegularSeasonDetailedResults_Prelim2018.csv")
+  Teams = read.csv("data/DataFiles/Teams.csv")
+```
+
+```{r,echo=FALSE,error=FALSE}
+  
   library(plyr)
   library(ggplot2)
+  
   # calculate frequency
   loc_freq = count(RegularSeasonDetailedResults$WLoc)
   
@@ -71,8 +80,6 @@ From looking at the graph, it is possible to witness 59.5% of the games won were
 
 Teams can be evaluated in terms of (1) goals they score in average or (2) win percentage across seasons. First, we considered the win percentage across the regular season. The questions that could be answered from this analysis are: who are the top 34 teams that frequently wins the game in the regular seasons? Are they ones who make it to the March Madness most frequently? 
 
-From this exploration, it was possible to see that the top 34 teams with the highest % of games won are one of the most frequent teams playing at NCAA March Madness. For instance, Vilanova won in 2018 and it is one of the top 34 teams. Duke, who is on the top 34 teams, is also very strong team, always making it to the Elite Eight most of the seasons. 
-
 ```{r, echo = FALSE}
 # win freq
 team_Wfreq = count(RegularSeasonDetailedResults$WTeamID)
@@ -98,6 +105,7 @@ final_frequency$TeamID <- factor(final_frequency$TeamID, levels = final_frequenc
 
 ## Question: What are top 34 teams? 
 top.teams = head(final_frequency[order(-final_frequency$percentage),], n=34)
+
 ## Question: What are worst 34 teams?
 bottom.teams = head(final_frequency[order(final_frequency$percentage),], n=34)
 
@@ -109,9 +117,18 @@ bottom.teams = head(final_frequency[order(final_frequency$percentage),], n=34)
   xlab("Team Name") + theme(
     axis.text.x = element_text(angle=90, hjust=1)
   )
+ 
+ # plot
+ ggplot(bottom.teams, aes(x=TeamName, y=percentage)) +
+  ylim(0, 100) +
+  ggtitle("Worst 34 teams % of games won") +
+  geom_bar(stat='identity') +
+  xlab("Team Name") + theme(
+    axis.text.x = element_text(angle=90, hjust=1)
+  )
 ```
 
-In terms of the number of goals scored, we see a different set of list. It is...
+From this exploration, it was possible to see that the top 34 teams with the highest % of games won are one of the most frequent teams playing at NCAA March Madness. For instance, Vilanova won in 2018 and it is one of the top 34 teams. Duke, who is on the top 34 teams, is also very strong team, always making it to the Elite Eight most of the seasons. Moreover, when we look at the worst 34 teams, the winning % of games are in average 25-30%. 
 
 ```{r, echo = FALSE}
 library(knitr)
@@ -131,17 +148,83 @@ AggScores$TeamID = factor(AggScores$TeamID, levels = AggScores$TeamID[order(AggS
 AggScores = AggScores[,-4:-5]
 
 # Top 34 scoring teams
-kable(head(AggScores[order(-AggScores$Score), ], n=34))
+top.score.teams = head(AggScores[order(-AggScores$Score), ], n=34)
 
 # Worst 34 scoring teams
-kable(head(AggScores[order(AggScores$Score), ], n=34))
+worst.score.teams = head(AggScores[order(AggScores$Score), ], n=34)
+
+# plot
+ ggplot(top.score.teams, aes(x=TeamName, y=Score)) +
+  ylim(0, 100) +
+  ggtitle("Top 34 teams Score per game") +
+  geom_bar(stat='identity') +
+  xlab("Team Name") + theme(
+    axis.text.x = element_text(angle=90, hjust=1)
+  )
+ 
+ # plot
+ ggplot(worst.score.teams, aes(x=TeamName, y=Score)) +
+  ylim(0, 100) +
+  ggtitle("Worst 34 teams Score per game") +
+  geom_bar(stat='identity') +
+  xlab("Team Name") + theme(
+    axis.text.x = element_text(angle=90, hjust=1)
+  )
+
+# Teams who were in both top 34 scoring teams & top 34 % win teams
+kable(top.teams$TeamName[top.teams$TeamName %in% top.score.teams$TeamName], col.names = "Team Name")
 ```
+From observing the scores per game of the top 34 highest scoring team per game and those in the bottom 34, we can actually see there are some teams we observed in top % winning teams and bottom % winning teams. It is possible that those who are both in the list of top scoring and % winning would be also in the NCAA March Madness would be the ones making it to the *Final Four*. Just for a side note, the top five frequent winners of NCAA March Madness were: Kentucky, Kansas, North Carolina, Duke and Temple. Since 2015, Gonzaga has been performing well, making it to Elite Eight most of the seasons. 
+
+Another question we had was to see if points scored are correlated to the game result. To answer this question, we compared the game result relative to the total scores. 
+
+```{r, echo = FALSE}
+Wscor <- as.data.frame(RegularSeasonDetailedResults$WTeamID)
+colnames(Wscor)[1] <- "TeamID"
+Wscor['Score'] <- RegularSeasonDetailedResults$WScore
+Wscor['Result'] <- 'Win'
+
+Lscor <- as.data.frame(RegularSeasonDetailedResults$LTeamID)
+colnames(Lscor)[1] <- "TeamID"
+Lscor['Score'] <- RegularSeasonDetailedResults$LScore
+Lscor['Result'] <- 'Lose'
+
+AllScores2 = rbind(Lscor,Wscor)
+
+# Game result relative to total scores
+ggplot(AllScores2, aes(x=Score,y=Result,fill=Result,colour=Result)) +
+  xlim(0,150) + ggtitle("Result of the match to points scored") +
+  geom_point(stat="identity")+
+  xlab("Point Scored in Game")+
+  ylab("Result")
+```
+
+From this graph, we can see that winning matches have higher average points scored in the game. However, there are some outliers where it was a lost game but point scored is very high. 
+
+```{r,echo=FALSE}
+# Calculate win probability based on scores
+Wscores_freq <- as.data.frame(count(Wscor$Score))
+Lscores_freq <- as.data.frame(count(Lscor$Score))
+Scores_prob <- merge(Wscores_freq, Lscores_freq, by=c("x"="x"), all=TRUE)
+colnames(Scores_prob)<- c("score","win","lose")
+
+# function for calculating probability
+probability <- function(x){
+     x$win / (x$win + x$lose)
+}
+Scores_prob['probability'] <- probability(Scores_prob)
+
+# What is the relationship in graph?
+plot(Scores_prob$score,Scores_prob$probability,pch=19,xlab="Score",ylab="Probability of winning",main="Chances of winning relationship with Scores",col="darkblue")
+```
+
+Now, digging into the relationship between points scored vs. probability of winning, we can see that there is a point in which teams can increase the chance of winning. The pinnacle would be between 80-100. After that, the chance of winning slowly drops. So from this, we can see that "high points scored" doesn't necessarily guarantee "winning". 
 
 ## Winning Probability by Basketball Statistics
 
 Also, by exploring different basketball statistics that could be engineered further down the analysis, we can figure out which statistics affect the result of the match. Game statistics are those that may contribute to the probability of winning. Points scores in game (pts), number of assists (ast), number of steals (stl) and number of blocks (blk) are some of the examples of "game statistics" in this report. 
 
-For the purpose of exploration, we looked at 13 variables: 
+For the purpose of exploration, we looked at 14 variables: 
             * pts: points scored in game
             * fgm: field goals made
             * fgm3: 3-point field goals made
@@ -151,26 +234,14 @@ For the purpose of exploration, we looked at 13 variables:
             * fta: free throws attempted
             * ast: number of assists
             * or: number of offensive rebounds
+            * dr: number of defensive rebounds
             * to: number of turn-over
             * stl: number of steals
             * blk: number of blocks
             * pf: number of personal fouls
 
-``{r,warning=FALSE,message=FALSE,echo=FALSE}
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
 library(gridExtra)
-# pts = points scored in game
-# fgm = field goals made
-# fgm3 = field goals made (3 points)
-# fga = field goals attempted
-# fga3 = field goals attempted (3 points)
-# ftm = free throws made
-# fta = free throws attempted
-# ast = assist
-# or = offensive rebounds
-# to = turn-over
-# stl = steal
-# blk = block
-# pf = personal fouls
 
 # win probability based on fgm
 wgfm = as.data.frame(count(RegularSeasonDetailedResults$WFGM))
@@ -178,78 +249,94 @@ lgfm = as.data.frame(count(RegularSeasonDetailedResults$LFGM))
 fgm_prob = merge(wgfm,lgfm,by=c("x"="x"),all=T)
 names(fgm_prob) = c("fgm","win","lose")
 fgm_prob["prob"] = probability(fgm_prob)
+
 # win probability based on fgm3
 wgfm3 = as.data.frame(count(RegularSeasonDetailedResults$WFGM3))
 lgfm3 = as.data.frame(count(RegularSeasonDetailedResults$LFGM3))
 fgm3_prob = merge(wgfm3,lgfm3,by=c("x"="x"),all=T)
 names(fgm3_prob) = c("fgm3","win","lose")
 fgm3_prob["prob"] = probability(fgm3_prob)
+
 # win probability based on fga 
 wfga = as.data.frame(count(RegularSeasonDetailedResults$WFGA))
 lfga = as.data.frame(count(RegularSeasonDetailedResults$LFGA))
 fga_prob = merge(wfga,lfga,by=c("x"="x"),all=T)
 names(fga_prob) = c("fga","win","lose")
 fga_prob["prob"] = probability(fga_prob)
+
 # win probability based on fga3
 wfga3 = as.data.frame(count(RegularSeasonDetailedResults$WFGA3))
 lfga3 = as.data.frame(count(RegularSeasonDetailedResults$LFGA3))
 fga3_prob = merge(wfga,lfga,by=c("x"="x"),all=T)
 names(fga3_prob) = c("fga3","win","lose")
 fga3_prob["prob"] = probability(fga3_prob)
+
 # win probability based on ftm
 wftm = as.data.frame(count(RegularSeasonDetailedResults$WFTM))
 lftm = as.data.frame(count(RegularSeasonDetailedResults$LFTM))
 ftm_prob = merge(wftm,lftm,by=c("x"="x"),all=T)
 names(ftm_prob) = c("ftm","win","lose")
 ftm_prob["prob"] = probability(ftm_prob)
+
 # win probability based on fta
 wfta = as.data.frame(count(RegularSeasonDetailedResults$WFTA))
 lfta = as.data.frame(count(RegularSeasonDetailedResults$LFTA))
 fta_prob = merge(wfta,lfta,by=c("x"="x"),all=T)
 names(fta_prob) = c("fta","win","lose")
 fta_prob["prob"] = probability(fta_prob)
+
 # win probability based on ast
 wast = as.data.frame(count(RegularSeasonDetailedResults$WAst))
 last = as.data.frame(count(RegularSeasonDetailedResults$LAst))
 ast_prob = merge(wast,last,by=c("x"="x"),all=T)
 names(ast_prob) = c("ast","win","lose")
 ast_prob["prob"] = probability(ast_prob)
+
 # win probability based on or
 wor = as.data.frame(count(RegularSeasonDetailedResults$WOR))
 lor  = as.data.frame(count(RegularSeasonDetailedResults$LOR))
 or_prob = merge(wor,lor,by=c("x"="x"),all=T)
 names(or_prob) = c("or","win","lose")
 or_prob["prob"] = probability(or_prob)
-# win probability based on to
+
+# win probability based on dr
 wdr = as.data.frame(count(RegularSeasonDetailedResults$WDR))
 ldr = as.data.frame(count(RegularSeasonDetailedResults$LDR))
 dr_prob = merge(wdr,ldr,by=c("x"="x"),all=T)
 names(dr_prob) = c("dr","win","lose")
 dr_prob["prob"] = probability(dr_prob)
+
 # win probability based on to
 wto = as.data.frame(count(RegularSeasonDetailedResults$WTO))
 lto = as.data.frame(count(RegularSeasonDetailedResults$LTO))
 to_prob = merge(wto,lto,by=c("x"="x"),all=T)
 names(to_prob) = c("to","win","lose")
 to_prob["prob"] = probability(to_prob)
+
 # win probability based on stl
 wstl = as.data.frame(count(RegularSeasonDetailedResults$WStl))
 lstl = as.data.frame(count(RegularSeasonDetailedResults$LStl))
 stl_prob = merge(wstl,lstl,by=c("x"="x"),all=T)
 names(stl_prob) = c("stl","win","lose")
 stl_prob["prob"] = probability(stl_prob)
+
 # win probability based on blk
 wblk = as.data.frame(count(RegularSeasonDetailedResults$WBlk))
 lblk = as.data.frame(count(RegularSeasonDetailedResults$LBlk))
 blk_prob = merge(wblk,lblk,by=c("x"="x"),all=T)
 names(blk_prob) = c("blk","win","lose")
 blk_prob["prob"] = probability(blk_prob)
+
 # win probability based on pf
 wpf = as.data.frame(count(RegularSeasonDetailedResults$WPF))
 lpf = as.data.frame(count(RegularSeasonDetailedResults$LPF))
 pf_prob = merge(wpf,lpf,by=c("x"="x"),all=T)
 names(pf_prob) = c("pf","win","lose")
 pf_prob["prob"] = probability(pf_prob)
+```
+
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+library(gridExtra)
 
 #---graph---#
 p1 <- ggplot(Scores_prob, aes(x=score, y=probability)) +
@@ -364,20 +451,24 @@ p14 <- ggplot(pf_prob, aes(x=pf, y=prob)) +
   ylab('Win Probability') +
   theme(axis.title.x = element_text(size=11), axis.title.y = element_text(size=11)) +
   theme(aspect.ratio=1)
+
 grid.arrange(p1, p2, p3, p4, p5,p6)
 grid.arrange(p7,p8,p9,p10,p11,p12)
 grid.arrange(p13,p14)
 ```
-From looking at the graphs, ....
 
+Chance of winning increases as more free throws are attempted (fta), more defensive rebounds (dr) are made, more assists (ast) are made, blocks (blk) are made in the game, steals (stl) are made, more field goals are made (fgm, fgm3) and free throws are made (ftm). However, we can see that *attempts* don't help in the games. It is the accuracy of making the goals that matters as any *attempts* give the opponent the chance to rebound (possibly offensive one). Therefore, those teams who have the most accurate scorer in the team would most likely have higher chances of winning. Moreover, since assists and rebounds take enormous team work, we can infer that top teams that actually make it to the March Madness would have very constructive team. 
 
 # Data Modeling 
- Our goal is to get the most accurate predictions of NCAA tournament results in year 2018. To achieve this goal, we tried several machine learning methods, such as logistic regression, random forest, LDA and so on. Data modeling was divided into 3 parts: "Data Cleaning", "Feature Engineering", and "Statistical Modeling".  
 
-## DATA Cleaning
-  As we had already discussed, this project used many datasets and it was necessary to merge them and extract important features. First let's look through the dataset. The followings are the files we used. The data regarding the matchup before NCAA tournaments in 2018 was used as train data and the one of NCAA tournaments in 2018 was used as test data.  
+Our goal is to get the most accurate predictions of NCAA tournament results in year 2018. To achieve this goal, we tried several machine learning methods, such as logistic regression, random forest, LDA and so on. Data modeling was divided into 3 parts: "Data Cleaning", "Feature Engineering", and "Statistical Modeling".  
+
+## Data Cleaning
+
+As we had already discussed, this project used many datasets and it was necessary to merge them and extract important features. First let's look through the dataset. The followings are the files we used. The data regarding the matchup before NCAA tournaments in 2018 was used as train data and the one of NCAA tournaments in 2018 was used as test data.  
   
-![train_test_explanation](test_train.png)
+("test_train.png")
+
 **(Train data)**
 
   - RegularSeasonCompactResults_Prelim2018.csv: Game-by-game results for many *seasons* of historical data, starting with the 1985 season. For each season, the file includes   all games played from daynum 0 through 132. It is important to realize that the "Regular Season" games are simply defined to be all games played on DayNum=132 or earlier (DayNum=132 is Selection Sunday) 
@@ -392,7 +483,7 @@ From looking at the graphs, ....
   
   - Players_XXXX.csv: Players list  from 2010 to 2018.  Each player is assigned to team they belonged to. 
   
-  -Events_XXXX.csv: Play-by-play event logs for almost all games from that season. Elapsed seconds, event type, points are recorded. This data does not include NCAA tournament 2018.
+  - Events_XXXX.csv: Play-by-play event logs for almost all games from that season. Elapsed seconds, event type, points are recorded. This data does not include NCAA tournament 2018.
   
 **(Test data)**  
 
@@ -401,35 +492,35 @@ From looking at the graphs, ....
   - 2018NCAATourneyDetailedResults.csv: Team-level box scores for *NCAA tournament* 2018
 
 ```{r eval=FALSE}
-RegularSeasonCompactResults=read.csv("PrelimData2018/RegularSeasonCompactResults_Prelim2018.csv")
-NCAATourneyCompactResults=read.csv("DataFiles/NCAATourneyCompactResults.csv")
-NCAATourneyCompactResults_2018=read.csv("DataFiles/2018NCAATourneyCompactResults.csv")
+RegularSeasonCompactResults=read.csv("data/PrelimData2018/RegularSeasonCompactResults_Prelim2018.csv")
+NCAATourneyCompactResults=read.csv("data/DataFiles/NCAATourneyCompactResults.csv")
+NCAATourneyCompactResults_2018=read.csv("data/DataFiles/2018NCAATourneyCompactResults.csv")
 
-RegularSeasonDetailedResults=read.csv("PrelimData2018/RegularSeasonDetailedResults_Prelim2018.csv")
-NCAATourneyDetailedResults=read.csv("DataFiles/NCAATourneyDetailedResults.csv")
-NCAATourneyDetailedResults_2018=read.csv("DataFiles/2018NCAATourneyDetailedResults.csv")
+RegularSeasonDetailedResults=read.csv("data/PrelimData2018/RegularSeasonDetailedResults_Prelim2018.csv")
+NCAATourneyDetailedResults=read.csv("data/DataFiles/NCAATourneyDetailedResults.csv")
+NCAATourneyDetailedResults_2018=read.csv("data/DataFiles/2018NCAATourneyDetailedResults.csv")
 
-MasseyOrdinals=read.csv("PrelimData2018/MasseyOrdinals_Prelim2018.csv")
+MasseyOrdinals=read.csv("data/PrelimData2018/MasseyOrdinals_Prelim2018.csv")
 
-Events_2010=read.csv("PlayByPlay_2010/Events_2010.csv")
-Events_2011=read.csv("PlayByPlay_2011/Events_2011.csv")
-Events_2012=read.csv("PlayByPlay_2012/Events_2012.csv")
-Events_2013=read.csv("PlayByPlay_2013/Events_2013.csv")
-Events_2014=read.csv("PlayByPlay_2014/Events_2014.csv")
-Events_2015=read.csv("PlayByPlay_2015/Events_2015.csv")
-Events_2016=read.csv("PlayByPlay_2016/Events_2016.csv")
-Events_2017=read.csv("PlayByPlay_2017/Events_2017.csv")
-Events_2018=read.csv("PrelimData2018/Events_Prelim2018.csv")
+Events_2010=read.csv("data/PlayByPlay_2010/Events_2010.csv")
+Events_2011=read.csv("data/PlayByPlay_2011/Events_2011.csv")
+Events_2012=read.csv("data/PlayByPlay_2012/Events_2012.csv")
+Events_2013=read.csv("data/PlayByPlay_2013/Events_2013.csv")
+Events_2014=read.csv("data/PlayByPlay_2014/Events_2014.csv")
+Events_2015=read.csv("data/PlayByPlay_2015/Events_2015.csv")
+Events_2016=read.csv("data/PlayByPlay_2016/Events_2016.csv")
+Events_2017=read.csv("data/PlayByPlay_2017/Events_2017.csv")
+Events_2018=read.csv("data/PrelimData2018/Events_Prelim2018.csv")
 
-Players_2010=read.csv("PlayByPlay_2010/Players_2010.csv")
-Players_2011=read.csv("PlayByPlay_2011/Players_2011.csv")
-Players_2012=read.csv("PlayByPlay_2012/Players_2012.csv")
-Players_2013=read.csv("PlayByPlay_2013/Players_2013.csv")
-Players_2014=read.csv("PlayByPlay_2014/Players_2014.csv")
-Players_2015=read.csv("PlayByPlay_2015/Players_2015.csv")
-Players_2016=read.csv("PlayByPlay_2016/Players_2016.csv")
-Players_2017=read.csv("PlayByPlay_2017/Players_2017.csv")
-Players_2018=read.csv("PrelimData2018/Players_Prelim2018.csv")
+Players_2010=read.csv("data/PlayByPlay_2010/Players_2010.csv")
+Players_2011=read.csv("data/PlayByPlay_2011/Players_2011.csv")
+Players_2012=read.csv("data/PlayByPlay_2012/Players_2012.csv")
+Players_2013=read.csv("data/PlayByPlay_2013/Players_2013.csv")
+Players_2014=read.csv("data/PlayByPlay_2014/Players_2014.csv")
+Players_2015=read.csv("data/PlayByPlay_2015/Players_2015.csv")
+Players_2016=read.csv("data/PlayByPlay_2016/Players_2016.csv")
+Players_2017=read.csv("data/PlayByPlay_2017/Players_2017.csv")
+Players_2018=read.csv("data/PrelimData2018/Players_Prelim2018.csv")
 ```
 
 Because Player_XXXX dataset had some strange value: "TEAM", we excluded this from data.
@@ -466,30 +557,17 @@ We thought choice 1 was too overfitting with each matchup and was lack of power 
 
 They are all based on our own subjective criteria. So there might be room for improvement.
 
-**(Step1) Give scores to each event, and aggregate events by player and year**
+**(Step 1) Give scores to each event, and aggregate events by player and year**
 
 ```{r eval=FALSE}
 ####get the score of each player every year#### 
 ##give the score to the player in the following way##
-#assist=1
-#block=1
-#steal=1
-#turnover=-1
-#timeout, timeout_tv =0
-#foul_pers=-1
-#foul_tech=-1
-#reb_off, reb_def, reb_dead=1
-#sub_in, sub_ou=0
-#made1_free=1,miss1_free=-1
-#made2_dunk=1,miss2_dunk=0
-#made2_tip=1,miss2_tip=0
-#made2_lay=1,miss2_lay=0
-#made2_jump=1,miss2_jump=0
-#made3_jump=1,miss3_jump=0
 player_score=function(Events,Players){
-  events=dplyr::full_join(Events,Players,by=c("Season","EventPlayerID"="PlayerID","EventTeamID"="TeamID"))
-  events$events_score=ifelse(events$EventType%in%c("assist","block","steal","reb_off","reb_def","reb_dead","made1_free","made2_dunk","made2_tip","made2_lay","made2_jump","made3_jump"),1,ifelse(events$EventType%in%c("turnover","foul_pers","foul_tech","miss1_free"),-1,0))
-  events=group_by(events,PlayerName)%>%summarise(TotalScore=sum(events_score))
+  events=dplyr::full_join(Events,Players, by=c("Season","EventPlayerID"="PlayerID","EventTeamID"="TeamID"))
+  events$events_score=ifelse(events$EventType%in% c("assist","block","steal","reb_off","reb_def","reb_dead","made1_free", "made2_dunk","made2_tip","made2_lay","made2_jump","made3_jump"),1, ifelse(events$EventType%in% c("turnover","foul_pers","foul_tech","miss1_free"),-1,0))
+  events=
+    group_by(events,PlayerName)%>%
+    summarise(TotalScore=sum(events_score))
   return(events)
 }
 events2010=player_score(Events_2010,Players_2010)
@@ -506,46 +584,64 @@ events2018=player_score(Events_2018,Players_2018)
 
 ```{r eval=FALSE}
 #merge Players file and events 
-player_score_2010=dplyr::full_join(Players_2010,events2010,by="PlayerName")
-player_score_2011=dplyr::full_join(Players_2011,events2011,by="PlayerName")
-player_score_2012=dplyr::full_join(Players_2012,events2012,by="PlayerName")
-player_score_2013=dplyr::full_join(Players_2013,events2013,by="PlayerName")
-player_score_2014=dplyr::full_join(Players_2014,events2014,by="PlayerName")
-player_score_2015=dplyr::full_join(Players_2015,events2015,by="PlayerName")
-player_score_2016=dplyr::full_join(Players_2016,events2016,by="PlayerName")
-player_score_2017=dplyr::full_join(Players_2017,events2017,by="PlayerName")
-player_score_2018=dplyr::full_join(Players_2018,events2018,by="PlayerName")
+player_score_2010=dplyr::
+  full_join(Players_2010,events2010,by="PlayerName")
+player_score_2011=dplyr::
+  full_join(Players_2011,events2011,by="PlayerName")
+player_score_2012=dplyr::
+  full_join(Players_2012,events2012,by="PlayerName")
+player_score_2013=dplyr::
+  full_join(Players_2013,events2013,by="PlayerName")
+player_score_2014=dplyr::
+  full_join(Players_2014,events2014,by="PlayerName")
+player_score_2015=dplyr::
+  full_join(Players_2015,events2015,by="PlayerName")
+player_score_2016=dplyr::
+  full_join(Players_2016,events2016,by="PlayerName")
+player_score_2017=dplyr::
+  full_join(Players_2017,events2017,by="PlayerName")
+player_score_2018=dplyr::
+  full_join(Players_2018,events2018,by="PlayerName")
 ```
 
-**(Step2) Aggregate players' score by their belonging team**
+**(Step 2) Aggregate players' score by their belonging team**
 
 ```{r eval=FALSE}
 #get the average player score of each team for every year 
-team_score_2010=group_by(player_score_2010,TeamID)%>%summarise(Teamscore=sum(TotalScore))
+team_score_2010=group_by(player_score_2010,TeamID)%>%
+  summarise(Teamscore=sum(TotalScore))
 team_score_2010$Season=2010
 team_score_2010=team_score_2010[-dim(team_score_2010)[1],]
-team_score_2011=group_by(player_score_2011,TeamID)%>%summarise(Teamscore=sum(TotalScore))
+team_score_2011=group_by(player_score_2011,TeamID)%>%
+  summarise(Teamscore=sum(TotalScore))
 team_score_2011$Season=2011
 team_score_2011=team_score_2011[-dim(team_score_2011)[1],]
-team_score_2012=group_by(player_score_2012,TeamID)%>%summarise(Teamscore=sum(TotalScore))
+team_score_2012=group_by(player_score_2012,TeamID)%>%
+  summarise(Teamscore=sum(TotalScore))
 team_score_2012$Season=2012
 team_score_2012=team_score_2012[-dim(team_score_2012)[1],]
-team_score_2013=group_by(player_score_2013,TeamID)%>%summarise(Teamscore=sum(TotalScore))
+team_score_2013=group_by(player_score_2013,TeamID)%>%
+  summarise(Teamscore=sum(TotalScore))
 team_score_2013$Season=2013
 team_score_2013=team_score_2013[-dim(team_score_2013)[1],]
-team_score_2014=group_by(player_score_2014,TeamID)%>%summarise(Teamscore=sum(TotalScore))
+team_score_2014=group_by(player_score_2014,TeamID)%>%
+  summarise(Teamscore=sum(TotalScore))
 team_score_2014$Season=2014
 team_score_2014=team_score_2014[-dim(team_score_2014)[1],]
-team_score_2015=group_by(player_score_2015,TeamID)%>%summarise(Teamscore=sum(TotalScore))
+team_score_2015=group_by(player_score_2015,TeamID)%>%
+  summarise(Teamscore=sum(TotalScore))
 team_score_2015$Season=2015
 team_score_2015=team_score_2015[-dim(team_score_2015)[1],]
-team_score_2016=group_by(player_score_2016,TeamID)%>%summarise(Teamscore=sum(TotalScore))
+team_score_2016=group_by(player_score_2016,TeamID)%>%
+  summarise(Teamscore=sum(TotalScore))
 team_score_2016$Season=2016
 team_score_2016=team_score_2016[-dim(team_score_2016)[1],]
-team_score_2017=group_by(player_score_2017,TeamID)%>%summarise(Teamscore=sum(TotalScore))
+team_score_2017=group_by(player_score_2017,TeamID)%>%
+  summarise(Teamscore=sum(TotalScore))
 team_score_2017$Season=2017
 team_score_2017=team_score_2017[-dim(team_score_2017)[1],]
-team_score_2018=group_by(player_score_2018,TeamID)%>%summarise(Teamscore=sum(TotalScore))
+team_score_2018=group_by(player_score_2018,TeamID)%>%
+  summarise(Teamscore=sum(TotalScore))
 team_score_2018$Season=2018
 team_score_2018=team_score_2018[-dim(team_score_2018)[1],]
 
@@ -560,22 +656,25 @@ team_score=rbind(team_score,team_score_2018)
 write.csv(team_score,"team_score.csv")
 ```
 
-
 ### Merge data
 
 Now the data are separated and so we need to combine them. First RegularSeasonCompactResults and NCAATourneyCompactResults were merged vertically because they had same column and no overlap. Merged data was named Compact_train. Likewise, RegularSeasonDetailedResults and NCAATourneyDetailedResults were combined and merged data was named Details_train. Then Compact_train and Details_train were joined. Please note that Compact_train and Detail_train do not necessarily have the same day number because Details_train starts from 2003 whereas Compact_train starts with 1985. This is why we used full join in this case to keep the all rows in both dataset. We did the same procedure to test data.
 
 ```{r eval=FALSE}
 #Train data
-Compact_train=rbind(RegularSeasonCompactResults,NCAATourneyCompactResults)
-Details_train=rbind(RegularSeasonDetailedResults,NCAATourneyDetailedResults)
+Compact_train=rbind(RegularSeasonCompactResults, NCAATourneyCompactResults)
+Details_train=rbind(RegularSeasonDetailedResults, NCAATourneyDetailedResults)
 #I uesd left full because I want to keep the all row in both dataset
-Results_train=dplyr::full_join(Compact_train,Details_train,by=c("Season","DayNum","WTeamID","LTeamID","WScore","LScore","WLoc","NumOT"))
+Results_train=dplyr::full_join(
+  Compact_train,Details_train,
+  by=c("Season","DayNum","WTeamID","LTeamID", "WScore","LScore","WLoc","NumOT"))
 
 #Test data
 Compact_test=NCAATourneyCompactResults_2018
 Details_test=NCAATourneyDetailedResults_2018
-Results_test=dplyr::full_join(Compact_test,Details_test,by=c("Season","DayNum","WTeamID","LTeamID","WScore","LScore","WLoc","NumOT"))
+Results_test=dplyr::full_join(
+  Compact_test,Details_test,
+  by=c("Season","DayNum","WTeamID","LTeamID", "WScore","LScore","WLoc","NumOT"))
 ```
 
 We also changed MasseyOrdinals data from long data to wide data because it made it easier to combine with train data (Result_data). We merged twice for winner's rate and loser's rate. Consequently, Column 70T.x~ZAM.x is the rate for WTeam (Winning Team) and column 70T.y~ZAM.y is the rate for LTeam (Losing Team). 
@@ -584,16 +683,20 @@ We wanted to use MasseyOrdinals for test data too but it didn't have rate data f
 
 ```{r eval=FALSE}
 #spread the systemnae 
-spread_rank=spread(MasseyOrdinals,key="SystemName",value="OrdinalRank")
-dat_day_train=left_join(Results_train,spread_rank,by=c("Season","DayNum"="RankingDayNum","WTeamID"="TeamID"))
-dat_day_train=left_join(dat_day_train,spread_rank,by=c("Season","DayNum"="RankingDayNum","LTeamID"="TeamID"))
+spread_rank=spread(MasseyOrdinals,key="SystemName", value="OrdinalRank")
+dat_day_train=left_join(Results_train,spread_rank,
+                        by=c("Season","DayNum"="RankingDayNum","WTeamID"="TeamID"))
+dat_day_train=left_join(dat_day_train,spread_rank,
+                        by=c("Season","DayNum"="RankingDayNum","LTeamID"="TeamID"))
 #Column 70T.x~ZAM.x is the rate for WTeam
 #Column 70T.y~ZAM.y is the rate for LTeam
 train=dat_day_train
 #Rate data only has the date before DayNum=134. This is why, I want to regard the rating of the DayNum=133 as the rate for the NCAATourney (DauNum>133)
 spread_rank_for_test=spread_rank[spread_rank$RankingDayNum==114,]
-dat_day_test=left_join(Results_test,spread_rank_for_test,by=c("Season","WTeamID"="TeamID"))
-dat_day_test=left_join(dat_day_test,spread_rank_for_test,by=c("Season","LTeamID"="TeamID"))
+dat_day_test=left_join(Results_test,spread_rank_for_test,
+                       by=c("Season","WTeamID"="TeamID"))
+dat_day_test=left_join(dat_day_test,spread_rank_for_test,
+                       by=c("Season","LTeamID"="TeamID"))
 
 #Drop the RankingDayNum variable
 dat_day_test=dat_day_test[,c(-35,-200)]
@@ -602,9 +705,9 @@ test=dat_day_test
 
 ## Feature Engineering
 
-### Part1
+### Part 1
 
-We assumed that adding new features would provide a deeper understanding of a team's performance. That’s why we used indexes that were often used for analyzing basketball game. We refered to <https://www.kaggle.com/lnatml/feature-engineering-with-advanced-stats> to get the new feature. The explanation of each variable is written in the code chunk as comments. Because the rate variables were too many, we decided to use only average of them.
+We assumed that adding new features would provide a deeper understanding of a team's performance. That’s why we used indexes that were often used for analyzing basketball game. We refered to Kaggle[3] to get the new feature. The explanation of each variable is written in the code chunk as comments. Because the rate variables were too many, we decided to use only average of them.
 
 ```{r eval=FALSE}
 #Points Winning/Losing Team
@@ -675,11 +778,11 @@ colnames(train)[7]="Loc"
 sub_train=train
 ```
 
-### Part2
+### Part 2
 
 Now we have the data like model1 below. This seemed to be good enough to analyze data but we tried to enrich data. If we reverse the winning team and losing team and add this data to the existing data, this will make the data more robust because this will allow for each variable to take more variation. Moreover in the model1, the outcome is all the same among all samples  (i.e. outcome is all win (or lose)) and this will cause the model to return only one value. By enriching data, we can avoid those problems. 
 
-![Enrich the data](model.png)
+("enrich.png")
 
 ```{r eval=FALSE}
 #In this case, winner team is named as TeamID1 and the result is 1
@@ -689,10 +792,12 @@ colnames(train_1)[5]="TeamID2"
 colnames(train_1)[4]="Team1_score"
 colnames(train_1)[6]="Team2_score"
 for(i in c(9,14,17,19,22,25,28,31,34,37,40,43,46)){
-  colnames(train_1)[i]=paste0("Team1_",substr(colnames(train_1)[i],2,nchar(colnames(train_1)[i])))
+  colnames(train_1)[i]=paste0("Team1_",substr(colnames(train_1)[i],
+                                              2,nchar(colnames(train_1)[i])))
 }
 for(i in c(10,15,18,20,23,26,29,32,35,38,41,44,47)){
-  colnames(train_1)[i]=paste0("Team2_",substr(colnames(train_1)[i],2,nchar(colnames(train_1)[i])))
+  colnames(train_1)[i]=paste0("Team2_",substr(colnames(train_1)[i],
+                                              2,nchar(colnames(train_1)[i])))
 }
 winners=train_1
 winners$Result=1.0
@@ -706,12 +811,17 @@ colnames(train_2)[5]="TeamID1"
 colnames(train_2)[4]="Team2_score"
 colnames(train_2)[6]="Team1_score"
 for(i in c(9,14,17,19,22,25,28,31,34,37,40,43,46)){
-  colnames(train_2)[i]=paste0("Team2_",substr(colnames(train_2)[i],2,nchar(colnames(train_2)[i])))
+  colnames(train_2)[i]=paste0("Team2_",
+                              substr(colnames(train_2)[i],
+                                     2,nchar(colnames(train_2)[i])))
 }
 for(i in c(10,15,18,20,23,26,29,32,35,38,41,44,47)){
-  colnames(train_2)[i]=paste0("Team1_",substr(colnames(train_2)[i],2,nchar(colnames(train_2)[i])))
+  colnames(train_2)[i]=paste0("Team1_",
+                              substr(colnames(train_2)[i],
+                                     2,nchar(colnames(train_2)[i])))
 }
-train_2[,c(11,12,16,21,24,27,30,33,36,39,42,45)]=-train_2[,c(11,12,16,21,24,27,30,33,36,39,42,45)]
+train_2[,c(11,12,16,21,24,27,30,33,36,39,42,45)]=-
+  train_2[,c(11,12,16,21,24,27,30,33,36,39,42,45)]
 train_2$Loc=ifelse(train_2$Loc=="A","H","A")
 losers=train_2
 losers$Result=0.0
@@ -738,7 +848,7 @@ colnames(train_X)[44]="player_score_1"
 colnames(train_X)[45]="player_score_2"
 ```
 
-### Part3
+### Part 3
 
 Let's move onto test data. We wanted to make features of test data but we had to be careful when making them. We can't use the features we made in part1 because it will cause data leakage.  For example, we can easily know that it's impossible to get the details of matchup, such as winning/ losing points and winning/losing team possession before the match is actually done. So we have to delete the variables that we can't know before the matchup actually starts.  
 
@@ -746,7 +856,7 @@ Let's move onto test data. We wanted to make features of test data but we had to
 #use the average ranking 
 test$Wranking=apply(test[,35:198],1,function(x) mean(x,na.rm=TRUE))
 test$Lranking=apply(test[,199:362],1,function(x) mean(x,na.rm=TRUE))
-#We have to remove the value from WFGM~LPF from test data because otherwise it will cause data leakage
+# remove the value from WFGM~LPF from test data because otherwise it will cause data leakage
 test=test[,c(-8:-362)]
 ```
   
@@ -760,8 +870,7 @@ Let's illustrate the following table. The first row in test data is Team10 vs Te
 
 Then how about when there was no same matchup before? In that case, we take an average of features of teams with similar ranking in train data. In the below table, the matchup Team 10 vs Team12 didn't occur in train data and so we took the average of Team 10 vs Team 23 and Team10 vs Team 90 because the opponents' ranking is similar with Team12's ranking.  
 
-
-![test_feature](test_feature.png)
+("test_feature.png")
 
 ```{r eval=FALSE}
 library(class)
@@ -770,7 +879,8 @@ library(class)
   
 create_train_feature=function(dat,colum){
     #Get the average of same matchup
-    a=dat%>%group_by(TeamID1,TeamID2)%>%summarise(mean=mean(.data[[colnames(dat)[colum]]],na.rm=TRUE))
+    a=dat%>%group_by(TeamID1,TeamID2)%>%summarise(
+      mean=mean(.data[[colnames(dat)[colum]]],na.rm=TRUE))
     #change the colum name
     colnames(a)[3]=colnames(sub_train)[colum+4]
     #combine with test data
@@ -816,8 +926,10 @@ We applied the same process as part 2 to test data and enriched the data.
 
 ```{r eval=FALSE}
 #combine testdata with team_score
-  test=dplyr::left_join(test,team_score,by=c("Season","WTeamID"="TeamID"))
-  test=dplyr::left_join(test,team_score,by=c("Season","LTeamID"="TeamID"))
+  test=dplyr::left_join(test,team_score,
+                        by=c("Season","WTeamID"="TeamID"))
+  test=dplyr::left_join(test,team_score,
+                        by=c("Season","LTeamID"="TeamID"))
   test=test[,c(-2,-4,-6)]
   colnames(test)[4]="Loc"
 ```
@@ -828,22 +940,26 @@ We applied the same process as part 2 to test data and enriched the data.
   colnames(winner)[3]="TeamID2"
   
   for(i in c(5,7,12,15,17,20,23,26,29,32,35,38,41)){
-    colnames(winner)[i]=paste0("Team1_",substr(colnames(winner)[i],2,nchar(colnames(winner)[i])))
+    colnames(winner)[i]=paste0("Team1_",substr(colnames(winner)[i],
+                                               2,nchar(colnames(winner)[i])))
   }
   for(i in c(6,8,13,16,18,21,24,27,30,33,36,39,42)){
-    colnames(winner)[i]=paste0("Team2_",substr(colnames(winner)[i],2,nchar(colnames(winner)[i])))
+    colnames(winner)[i]=paste0("Team2_",substr(colnames(winner)[i],
+                                               2,nchar(colnames(winner)[i])))
   }
   winner$Result=1.0
   loser=test
   colnames(loser)[2]="TeamID2"
   colnames(loser)[3]="TeamID1"
   for(i in c(5,7,12,15,17,20,23,26,29,32,35,38,41)){
-    colnames(loser)[i]=paste0("Team2_",substr(colnames(loser)[i],2,nchar(colnames(loser)[i])))
+    colnames(loser)[i]=paste0("Team2_",substr(colnames(loser)[i],
+                                              2,nchar(colnames(loser)[i])))
   }
   for(i in c(6,8,13,16,18,21,24,27,30,33,36,39,42)){
-    colnames(loser)[i]=paste0("Team1_",substr(colnames(loser)[i],2,nchar(colnames(loser)[i])))
+    colnames(loser)[i]=paste0("Team1_",substr(colnames(loser)[i],
+                                              2,nchar(colnames(loser)[i])))
   }
-  loser[,c(9,10,14,19,22,25,28,31,34,37,40,43)]=-winner[,c(9,10,14,19,22,25,28,31,34,37,40,43)]
+  loser[,c(9,10,14,19,22,25,28,31,34,37,40,43)]= -winner[,c(9,10,14,19,22,25,28,31,34,37,40,43)]
   loser$Loc=ifelse(loser$Loc=="A","H","A")
   loser$Result=0.0
   test=rbind(winner,loser)
@@ -856,10 +972,14 @@ We applied the same process as part 2 to test data and enriched the data.
 
 
 ```{r eval=FALSE}
-test_X$Team_ranking_diff=test_X$Team1_ranking-test_X$Team2_ranking
-test_X$player_score_diff=test_X$player_score_1-test_X$player_score_2
-train_X$Team_ranking_diff=train_X$Team1_ranking-train_X$Team2_ranking
-train_X$player_score_diff=train_X$player_score_1-train_X$player_score_2
+test_X$Team_ranking_diff=
+  test_X$Team1_ranking-test_X$Team2_ranking
+test_X$player_score_diff=
+  test_X$player_score_1-test_X$player_score_2
+train_X$Team_ranking_diff=
+  train_X$Team1_ranking-train_X$Team2_ranking
+train_X$player_score_diff=
+  train_X$player_score_1-train_X$player_score_2
 ```
 
 
@@ -877,7 +997,7 @@ write.csv(test_final,"test_final.csv")
 ```
   
 
-### Part4
+### Part 4
   Finally, we tried PCA because the data has many variables and might cause collinearity. We first extracted the numerical variables and then performed PCA. As you can see in the plot, most of the variation was explained after 5th components. I used different number of components in the following Statistical Modeling part and it turned out that there was not much big difference about the choice of number of components after 5.
 
 ```{r}
@@ -909,13 +1029,16 @@ write.csv(test_final,"test_final.csv")
   
   We also tried logistic regression, Linear Discriminant Analysis (LDA), Quadratic Discriminant Analysis (QDA), Random Forest and Neural Network to solve this classification problem (win or lose) and wanted to see applying other statistical methods improved the accuracy or not. 
 
-  First we used logistic regression. Accuracy was 82.09%.
+First we used logistic regression. Accuracy was 82.09%.
+
+```{r,echo=FALSE,message=FALSE}
+  suppressMessages(c(library(dplyr),
+  library(tidyr),
+  library(MASS),
+  library(randomForest)))
+```
 
 ```{r}
-  library(dplyr)
-  library(tidyr)
-  library(MASS)
-  library(randomForest)
   #logistic regression
   y=train_final[,48]
   train_pca=data.frame(cbind(train_pca,y))
@@ -1003,7 +1126,12 @@ table(predict_classes(model, test_for_neural),test_final[,48])
 
 # Conclusion
 
-The best accuracy was achieved by both simple model using Pts difference: point difference between winning team and losing team and random forest. We can consider that this first one is part of the random forest. It is equivalent to the model where only points difference was considered at split in random forest. Consequently, it turned that our algorithm that predicted the expected value of points difference performed very well. 
+The best accuracy was achieved by both simple model using Pts difference: point difference between winning team and losing team and random forest. We can consider that this first one is part of the random forest. It is equivalent to the model where only points difference was considered at split in random forest. Consequently, it turned that our algorithm that predicted the expected value of points difference performed very well.
 
-[1] https://www.kaggle.com/c/mens-machine-learning-competition-2018/data
-[2] 
+From this analysis, we found the model that could possibly predict the winning teams and the losing teams. Something that we can improve with this analysis is to actually incorporate *seeding* variable (as that is important aspect to consider to see who plays with who) to possibly predict who the real winner was after running through real simulations. At this point, we can see *who* might win. 
+
+# Sources Cited
+
+[1] https://www.wikipedia.org/wiki/NCAA_Division_I_Men's_Basketball_Tournament
+[2] https://www.kaggle.com/c/mens-machine-learning-competition-2018/data
+[3] https://www.kaggle.com/lnatml/feature-engineering-with-advanced-stats
